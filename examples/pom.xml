@@ -21,10 +21,10 @@
   <parent>
     <groupId>com.helger.jcodemodel</groupId>
     <artifactId>jcodemodel-parent-pom</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>examples</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.0</version><!-- that should be removed on post git process-->
   
   <packaging>pom</packaging>
   <name>JCodeModel Examples Pom</name>
