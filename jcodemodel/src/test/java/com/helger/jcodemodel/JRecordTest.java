@@ -474,4 +474,35 @@ public final class JRecordTest
 
     CodeModelTestsHelper.parseCodeModel (cm);
   }
+
+  @Test(expected=IllegalStateException.class)
+  public void testCantAddRecordComponentsToNonRecordClass() throws JCodeModelException {
+    final JCodeModel cm = new JCodeModel ();
+    final JDefinedClass c = cm._package ("org.example")._class ("SomeClass");
+    c.recordComponent (String.class, "foo");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void testCantAddCompactConstructorToNonRecordClass() throws JCodeModelException {
+    final JCodeModel cm = new JCodeModel ();
+    final JDefinedClass c = cm._package ("org.example")._class ("SomeClass");
+    c.compactConstructor (0);
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void testCantAddRecordComponentVarargToNonRecordClass() throws JCodeModelException {
+    final JCodeModel cm = new JCodeModel ();
+    final JDefinedClass c = cm._package ("org.example")._class ("SomeClass");
+    c.recordComponentVararg (cm.INT, "values");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void testCantAddDuplicateCompactConstructor() throws JCodeModelException {
+    final JCodeModel cm = new JCodeModel ();
+    final JDefinedClass rec = cm._package ("org.example")._record ("Range");
+    rec.recordComponent (cm.INT, "lo");
+    rec.recordComponent (cm.INT, "hi");
+    rec.compactConstructor (JMod.PUBLIC);
+    rec.compactConstructor (JMod.PUBLIC); // Should throw
+  }
 }

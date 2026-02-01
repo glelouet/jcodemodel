@@ -172,4 +172,5 @@ public final class JDefinedClassTest
     CodeModelTestsHelper.parseCodeModel (cm);
     CodeModelTestsHelper.compileCodeModel (cm);
   }
+
 }

@@ -377,7 +377,8 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JRecordComponent recordComponent (@NonNull final AbstractJType aType, @NonNull final String sName)
   {
-    ValueEnforcer.isTrue (isRecord (), "recordComponent() is only valid for record types");
+    if (!isRecord())
+      throw new IllegalStateException("recordComponent() is only valid for record types");
     ValueEnforcer.notNull (aType, "Type");
     ValueEnforcer.notNull (sName, "Name");
 
@@ -419,7 +420,8 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JRecordComponent recordComponentVararg (@NonNull final AbstractJType aType, @NonNull final String sName)
   {
-    ValueEnforcer.isTrue (isRecord (), "recordComponentVararg() is only valid for record types");
+    if (!isRecord())
+      throw new IllegalStateException("recordComponentVararg() is only valid for record types");
     ValueEnforcer.notNull (aType, "Type");
     ValueEnforcer.notNull (sName, "Name");
 
@@ -461,8 +463,11 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JMethod compactConstructor (final int nMods)
   {
-    ValueEnforcer.isTrue (isRecord (), "compactConstructor() is only valid for record types");
-    ValueEnforcer.isNull (m_aCompactConstructor, "A compact constructor has already been defined");
+    if (!isRecord())
+      throw new IllegalStateException("compactConstructor() is only valid for record types");
+
+    if (m_aCompactConstructor != null)
+      throw new IllegalStateException("A compact constructor has already been defined");
 
     m_aCompactConstructor = new JMethod (nMods, this);
     return m_aCompactConstructor;
