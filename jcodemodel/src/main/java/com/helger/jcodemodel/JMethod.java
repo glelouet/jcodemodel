@@ -530,6 +530,15 @@ public class JMethod extends AbstractJGenerifiableImpl implements IJAnnotatable,
     return m_aJDoc;
   }
 
+  /**
+   * @return <code>true</code> if a javadoc comment has been set on this method.
+   * @since 4.2.0
+   */
+  public boolean hasJavadoc ()
+  {
+    return m_aJDoc != null;
+  }
+
   @Override
   public void declare (@NonNull final IJFormatter f)
   {

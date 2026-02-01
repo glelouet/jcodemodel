@@ -11,4 +11,5 @@ target
 **/.settings/ 
 **/.project 
 **/.classpath 
+**/.idea
 pom.xml.versionsBackup
