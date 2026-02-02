@@ -40,6 +40,7 @@
  */
 package com.helger.jcodemodel;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -315,6 +316,83 @@ public abstract class AbstractJClass extends AbstractJType
   public AbstractJClass narrowAny ()
   {
     return narrow (owner ().wildcard ());
+  }
+
+  /**
+   * Creates a new type with a type-use annotation (JSR 308, Java 8+).
+   * <p>
+   * This is different from {@link IJAnnotatable#annotate(Class)} which adds annotations to
+   * <em>declarations</em> (classes, methods, fields). This method creates a new <em>type</em>
+   * that includes the annotation, for use in contexts like generic type arguments.
+   * <p>
+   * <b>Comparison:</b>
+   * <pre>
+   * // Declaration annotation using annotate() - annotates the field itself:
+   * // Generates: @NotNull private List&lt;String&gt; items;
+   * field.annotate(NotNull.class);
+   *
+   * // Type-use annotation using annotated() - annotates the type argument:
+   * // Generates: private List&lt;@NotNull String&gt; items;
+   * cm.ref(List.class).narrow(cm.ref(String.class).annotated(NotNull.class));
+   * </pre>
+   * <p>
+   * <b>Example usage:</b>
+   * <pre>
+   * AbstractJClass itemClass = codeModel.ref(Item.class);
+   * AbstractJClass annotatedItem = itemClass.annotated(Valid.class);
+   * AbstractJClass listType = codeModel.ref(List.class).narrow(annotatedItem);
+   * // Generates: List&lt;@Valid Item&gt;
+   * </pre>
+   *
+   * @param aClazz
+   *        The annotation class to apply as a type-use annotation.
+   * @return A new {@link JAnnotatedClass} wrapping this class with the annotation.
+   * @since 4.2.0
+   * @see IJAnnotatable#annotate(Class) for adding annotations to declarations
+   */
+  @NonNull
+  public JAnnotatedClass annotated (@NonNull final Class <? extends Annotation> aClazz)
+  {
+    return annotated (owner ().ref (aClazz));
+  }
+
+  /**
+   * Creates a new type with a type-use annotation (JSR 308, Java 8+).
+   * <p>
+   * This is different from {@link IJAnnotatable#annotate(AbstractJClass)} which adds annotations to
+   * <em>declarations</em> (classes, methods, fields). This method creates a new <em>type</em>
+   * that includes the annotation, for use in contexts like generic type arguments.
+   * <p>
+   * <b>Comparison:</b>
+   * <pre>
+   * // Declaration annotation using annotate() - annotates the field itself:
+   * // Generates: @NotNull private List&lt;String&gt; items;
+   * field.annotate(NotNull.class);
+   *
+   * // Type-use annotation using annotated() - annotates the type argument:
+   * // Generates: private List&lt;@NotNull String&gt; items;
+   * cm.ref(List.class).narrow(cm.ref(String.class).annotated(NotNull.class));
+   * </pre>
+   * <p>
+   * <b>Example usage:</b>
+   * <pre>
+   * AbstractJClass itemClass = codeModel.ref(Item.class);
+   * AbstractJClass validAnnotation = codeModel.ref(Valid.class);
+   * AbstractJClass annotatedItem = itemClass.annotated(validAnnotation);
+   * AbstractJClass listType = codeModel.ref(List.class).narrow(annotatedItem);
+   * // Generates: List&lt;@Valid Item&gt;
+   * </pre>
+   *
+   * @param aClazz
+   *        The annotation class to apply as a type-use annotation.
+   * @return A new {@link JAnnotatedClass} wrapping this class with the annotation.
+   * @since 4.2.0
+   * @see IJAnnotatable#annotate(AbstractJClass) for adding annotations to declarations
+   */
+  @NonNull
+  public JAnnotatedClass annotated (@NonNull final AbstractJClass aClazz)
+  {
+    return new JAnnotatedClass (this, new JAnnotationUse (aClazz));
   }
 
   /**
