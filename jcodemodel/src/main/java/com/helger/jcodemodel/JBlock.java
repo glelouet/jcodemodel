@@ -719,17 +719,15 @@ public class JBlock implements IJGenerable, IJStatement
   /**
    * Create a throw statement and add it to this block
    *
-   * @param aCM
-   *        Code model to use. May not be <code>null</code>.
-   * @param aClass
+   * @param aThrowClass
    *        Exception class to be thrown. May not be <code>null</code>.
    * @return Newly created {@link JThrow}
    * @since 4.2.0
    */
   @NonNull
-  public JThrow _throw (@NonNull final JCodeModel aCM, @NonNull final Class <? extends Throwable> aClass)
+  public JThrow _throw (@NonNull final AbstractJClass aThrowClass)
   {
-    return _throw (JExpr._new (aCM.ref (aClass)));
+    return _throw (JExpr._new (aThrowClass));
   }
 
   /**
