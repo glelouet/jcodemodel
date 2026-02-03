@@ -54,9 +54,9 @@ import com.helger.base.enforce.ValueEnforcer;
  * A block of Java code, which may contain statements and local declarations.
  * <p>
  * {@link JBlock} contains a large number of factory methods that creates new
- * statements/declarations. Those newly created statements/declarations are
- * inserted into the {@link #pos() "current position"}. The position advances
- * one every time you add a new instruction.
+ * statements/declarations. Those newly created statements/declarations are inserted into the
+ * {@link #pos() "current position"}. The position advances one every time you add a new
+ * instruction.
  */
 public class JBlock implements IJGenerable, IJStatement
 {
@@ -65,8 +65,8 @@ public class JBlock implements IJGenerable, IJStatement
   public static final boolean DEFAULT_INDENT_REQUIRED = true;
 
   /**
-   * Declarations and statements contained in this block. Either
-   * {@link IJStatement} or {@link IJDeclaration}.
+   * Declarations and statements contained in this block. Either {@link IJStatement} or
+   * {@link IJDeclaration}.
    */
   protected final List <IJObject> m_aContentList = new ArrayList <> ();
 
@@ -87,8 +87,8 @@ public class JBlock implements IJGenerable, IJStatement
   {}
 
   /**
-   * @return <code>true</code> if this is a virtual block never emitting braces
-   *         or indent. The default is {@link #DEFAULT_VIRTUAL_BLOCK}
+   * @return <code>true</code> if this is a virtual block never emitting braces or indent. The
+   *         default is {@link #DEFAULT_VIRTUAL_BLOCK}
    */
   public boolean virtual ()
   {
@@ -96,8 +96,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Mark this block virtual or not. Default is <code>false</code>. Virtual
-   * blocks NEVER have braces and are NEVER indented!
+   * Mark this block virtual or not. Default is <code>false</code>. Virtual blocks NEVER have braces
+   * and are NEVER indented!
    *
    * @param bVirtualBlock
    *        <code>true</code> to make this block a virtual block.
@@ -135,8 +135,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * @return The contained list of {@link IJStatement}s and
-   *         {@link IJDeclaration} in this block.
+   * @return The contained list of {@link IJStatement}s and {@link IJDeclaration} in this block.
    */
   @NonNull
   public List <IJObject> contentsMutable ()
@@ -145,8 +144,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * @return a read-only view of {@link IJStatement}s and {@link IJDeclaration}
-   *         in this block.
+   * @return a read-only view of {@link IJStatement}s and {@link IJDeclaration} in this block.
    */
   @NonNull
   public List <IJObject> getContents ()
@@ -198,9 +196,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * @return the current position to which new statements will be inserted. For
-   *         example if the value is 0, newly created instructions will be
-   *         inserted at the very beginning of the block.
+   * @return the current position to which new statements will be inserted. For example if the value
+   *         is 0, newly created instructions will be inserted at the very beginning of the block.
    * @see #pos(int)
    */
   @Nonnegative
@@ -222,7 +219,8 @@ public class JBlock implements IJGenerable, IJStatement
   @Nonnegative
   public int pos (@Nonnegative final int nNewPos)
   {
-    ValueEnforcer.isTrue (nNewPos >= 0 && nNewPos <= m_aContentList.size (), () -> "Illegal position provided: " + nNewPos);
+    ValueEnforcer.isTrue (nNewPos >= 0 && nNewPos <= m_aContentList.size (),
+                          () -> "Illegal position provided: " + nNewPos);
 
     final int nOldPos = m_nPos;
     m_nPos = nNewPos;
@@ -230,8 +228,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * @return <code>true</code> if this block is empty and does not contain any
-   *         statement.
+   * @return <code>true</code> if this block is empty and does not contain any statement.
    */
   public boolean isEmpty ()
   {
@@ -248,8 +245,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Adds a local variable declaration to this block. This enforces braces and
-   * indentation to be enabled!
+   * Adds a local variable declaration to this block. This enforces braces and indentation to be
+   * enabled!
    *
    * @param aType
    *        JType of the variable
@@ -264,8 +261,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Adds a local variable declaration to this block. This enforces braces and
-   * indentation to be enabled!
+   * Adds a local variable declaration to this block. This enforces braces and indentation to be
+   * enabled!
    *
    * @param nMods
    *        Modifiers for the variable
@@ -282,8 +279,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Adds a local variable declaration to this block. This enforces braces and
-   * indentation to be enabled!
+   * Adds a local variable declaration to this block. This enforces braces and indentation to be
+   * enabled!
    *
    * @param aType
    *        JType of the variable
@@ -300,8 +297,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Adds a local variable declaration to this block. This enforces braces and
-   * indentation to be enabled!
+   * Adds a local variable declaration to this block. This enforces braces and indentation to be
+   * enabled!
    *
    * @param nMods
    *        Modifiers for the variable
@@ -314,7 +311,10 @@ public class JBlock implements IJGenerable, IJStatement
    * @return Newly generated {@link JVar}
    */
   @NonNull
-  public JVar decl (final int nMods, @NonNull final AbstractJType aType, @NonNull final String sName, @Nullable final IJExpression aInit)
+  public JVar decl (final int nMods,
+                    @NonNull final AbstractJType aType,
+                    @NonNull final String sName,
+                    @Nullable final IJExpression aInit)
   {
     final JVar v = new JVar (JMods.forVar (nMods), aType, sName, aInit);
     internalInsert (v);
@@ -322,15 +322,14 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Insert a variable before another element of this block. This enforces
-   * braces and indentation to be enabled!
+   * Insert a variable before another element of this block. This enforces braces and indentation to
+   * be enabled!
    *
    * @param aVar
    *        The variable to be inserted. May not be <code>null</code>.
    * @param aBefore
-   *        The object before the variable should be inserted. If the passed
-   *        object is not contained in this block, an
-   *        {@link IndexOutOfBoundsException} is thrown.
+   *        The object before the variable should be inserted. If the passed object is not contained
+   *        in this block, an {@link IndexOutOfBoundsException} is thrown.
    * @return this for chaining
    */
   @NonNull
@@ -387,12 +386,12 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aExpr
-   *        {@link IJExpression} evaluating to the class or object upon which
-   *        the named method will be invoked
+   *        {@link IJExpression} evaluating to the class or object upon which the named method will
+   *        be invoked
    * @param sMethod
    *        Name of method to invoke
    */
@@ -403,14 +402,14 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aCM
    *        CodeModel to use. May be <code>null</code>.
    * @param aExpr
-   *        {@link IJExpression} evaluating to the class or object upon which
-   *        the named method will be invoked
+   *        {@link IJExpression} evaluating to the class or object upon which the named method will
+   *        be invoked
    * @param sMethod
    *        Name of method to invoke
    * @since 3.1.0
@@ -422,8 +421,8 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param sMethod
    *        Name of method to invoke on this
@@ -434,10 +433,10 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Explicitly call the super class constructor in this block. This method may
-   * only be called as the first call inside a constructor block!<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Explicitly call the super class constructor in this block. This method may only be called as
+   * the first call inside a constructor block!<br>
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @since 3.0.1
    */
@@ -448,12 +447,12 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aExpr
-   *        {@link IJExpression} evaluating to the class or object upon which
-   *        the method will be invoked
+   *        {@link IJExpression} evaluating to the class or object upon which the method will be
+   *        invoked
    * @param aMethod
    *        {@link JMethod} to invoke
    */
@@ -464,8 +463,8 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aMethod
    *        {@link JMethod} to invoke on this
@@ -477,8 +476,8 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates a static invocation statement.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aType
    *        Type upon which the method should be invoked
@@ -492,8 +491,8 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param sMethod
    *        Name of method to invoke
@@ -505,8 +504,8 @@ public class JBlock implements IJGenerable, IJStatement
 
   /**
    * Creates an invocation statement and adds it to this block.<br>
-   * Note: since 3.1.0 this method no longer returns the invocation, to avoid
-   * chaining, as this would not work (see #62)
+   * Note: since 3.1.0 this method no longer returns the invocation, to avoid chaining, as this
+   * would not work (see #62)
    *
    * @param aMethod
    *        JMethod to invoke
@@ -555,8 +554,8 @@ public class JBlock implements IJGenerable, IJStatement
    * Adds a single line comment to this block
    *
    * @param sComment
-   *        The comment string to be added. <code>null</code> is ignored, empty
-   *        string lead to an empty single line comment.
+   *        The comment string to be added. <code>null</code> is ignored, empty string lead to an
+   *        empty single line comment.
    * @return this for chaining
    */
   @NonNull
@@ -581,8 +580,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create an If statement with the respective then statement and add it to
-   * this block
+   * Create an If statement with the respective then statement and add it to this block
    *
    * @param aTestExpr
    *        {@link IJExpression} to be tested to determine branching
@@ -599,8 +597,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create an If statement with the respective then and else statements and add
-   * it to this block
+   * Create an If statement with the respective then and else statements and add it to this block
    *
    * @param aTestExpr
    *        {@link IJExpression} to be tested to determine branching
@@ -611,7 +608,9 @@ public class JBlock implements IJGenerable, IJStatement
    * @return Newly generated {@link JConditional} statement
    */
   @NonNull
-  public JConditional _if (@NonNull final IJExpression aTestExpr, @NonNull final IJStatement aThen, @NonNull final IJStatement aElse)
+  public JConditional _if (@NonNull final IJExpression aTestExpr,
+                           @NonNull final IJStatement aThen,
+                           @NonNull final IJStatement aElse)
   {
     final JConditional aCond = new JConditional (aTestExpr);
     aCond._then ().add (aThen);
@@ -622,8 +621,7 @@ public class JBlock implements IJGenerable, IJStatement
   /**
    * Create a For statement and add it to this block
    *
-   * @return Newly generated {@link JForLoop} statement. Never <code>null</code>
-   *         .
+   * @return Newly generated {@link JForLoop} statement. Never <code>null</code> .
    */
   @NonNull
   public JForLoop _for ()
@@ -719,6 +717,22 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
+   * Create a throw statement and add it to this block
+   *
+   * @param aCM
+   *        Code model to use. May not be <code>null</code>.
+   * @param aClass
+   *        Exception class to be thrown. May not be <code>null</code>.
+   * @return Newly created {@link JThrow}
+   * @since 4.2.0
+   */
+  @NonNull
+  public JThrow _throw (@NonNull final JCodeModel aCM, @NonNull final Class <? extends Throwable> aClass)
+  {
+    return _throw (JExpr._new (aCM.ref (aClass)));
+  }
+
+  /**
    * Create a break statement without a label and add it to this block
    *
    * @return Newly created {@link JBreak}
@@ -743,8 +757,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create a label, which can be referenced from <code>continue</code> and
-   * <code>break</code> statements.
+   * Create a label, which can be referenced from <code>continue</code> and <code>break</code>
+   * statements.
    *
    * @param sName
    *        Label name
@@ -783,8 +797,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create a sub-block and add it to this block. By default braces and indent
-   * are required.
+   * Create a sub-block and add it to this block. By default braces and indent are required.
    *
    * @return New {@link JBlock}
    * @see #block(boolean, boolean)
@@ -797,8 +810,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create a sub-block and add it to this block. By default braces and indent
-   * are not required.
+   * Create a sub-block and add it to this block. By default braces and indent are not required.
    *
    * @return New {@link JBlock}
    * @see #block()
@@ -811,8 +823,8 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Create a sub-block and add it to this block. This kind of block will never
-   * create braces or indent!
+   * Create a sub-block and add it to this block. This kind of block will never create braces or
+   * indent!
    *
    * @return New {@link JBlock}
    * @see #block()
@@ -842,8 +854,7 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
-   * Creates an enhanced For statement based on j2se 1.5 JLS and add it to this
-   * block
+   * Creates an enhanced For statement based on j2se 1.5 JLS and add it to this block
    *
    * @param aVarType
    *        Variable type
@@ -854,14 +865,15 @@ public class JBlock implements IJGenerable, IJStatement
    * @return Newly generated enhanced For statement per j2se 1.5 specification
    */
   @NonNull
-  public JForEach forEach (@NonNull final AbstractJType aVarType, @NonNull final String sName, @NonNull final IJExpression aCollection)
+  public JForEach forEach (@NonNull final AbstractJType aVarType,
+                           @NonNull final String sName,
+                           @NonNull final IJExpression aCollection)
   {
     return forEach (0, aVarType, sName, aCollection);
   }
 
   /**
-   * Creates an enhanced For statement based on j2se 1.5 JLS and add it to this
-   * block
+   * Creates an enhanced For statement based on j2se 1.5 JLS and add it to this block
    *
    * @param nMods
    *        Modifier for the variable
@@ -901,8 +913,7 @@ public class JBlock implements IJGenerable, IJStatement
    * <p>
    * Specified string is printed as-is. This is useful as a short-cut.
    * <p>
-   * For example, you can invoke this method as:
-   * <code>directStatement("a=b+c;")</code>.
+   * For example, you can invoke this method as: <code>directStatement("a=b+c;")</code>.
    *
    * @param sSource
    *        The source code to state. May not be <code>null</code>.

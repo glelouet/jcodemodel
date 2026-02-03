@@ -203,7 +203,7 @@ public final class JRecordTest
     final JDefinedClass rec = cm._package ("org.example")._record ("Person");
 
     final JRecordComponent nameComponent = rec.recordComponent (cm.ref (String.class), "name");
-    nameComponent.annotate (cm.ref (org.jspecify.annotations.NonNull.class));
+    nameComponent.annotate (org.jspecify.annotations.NonNull.class);
 
     rec.recordComponent (cm.INT, "age");
 
@@ -237,15 +237,15 @@ public final class JRecordTest
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package ("org.example")._record ("Range");
-    rec.recordComponent (cm.INT, "lo");
-    rec.recordComponent (cm.INT, "hi");
+    final JRecordComponent rcLo = rec.recordComponent (cm.INT, "lo");
+    final JRecordComponent rcHi = rec.recordComponent (cm.INT, "hi");
 
     // Compact constructor - no parameter list, just validation logic
     final JMethod compactCtor = rec.compactConstructor (JMod.PUBLIC);
     compactCtor.body ()
-               ._if (JExpr.ref ("lo").gt (JExpr.ref ("hi")))
+               ._if (JExpr.ref (rcLo).gt (JExpr.ref (rcHi)))
                ._then ()
-               ._throw (JExpr._new (cm.ref (IllegalArgumentException.class)));
+               ._throw (cm, IllegalArgumentException.class);
 
     final String output = CodeModelTestsHelper.declare (rec);
     // Compact constructor has no parentheses after the record name
@@ -280,8 +280,8 @@ public final class JRecordTest
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package ("org.example")._record ("Range");
-    final JRecordComponent loComp = rec.recordComponent (cm.INT, "lo");
-    final JRecordComponent hiComp = rec.recordComponent (cm.INT, "hi");
+    final JRecordComponent rcLo = rec.recordComponent (cm.INT, "lo");
+    final JRecordComponent rcHi = rec.recordComponent (cm.INT, "hi");
 
     // Canonical constructor - must have same parameters as record components
     final JMethod ctor = rec.constructor (JMod.PUBLIC);
@@ -289,8 +289,8 @@ public final class JRecordTest
     final JVar hiParam = ctor.param (cm.INT, "hi");
     ctor.body ()._if (loParam.gt (hiParam))._then ()._throw (JExpr._new (cm.ref (IllegalArgumentException.class)));
     // This could be done nicer...
-    ctor.body ().assign (JExpr.refthis (loComp), loParam);
-    ctor.body ().assign (JExpr.refthis (hiComp), hiParam);
+    ctor.body ().assign (JExpr.refthis (rcLo), loParam);
+    ctor.body ().assign (JExpr.refthis (rcHi), hiParam);
 
     final String output = CodeModelTestsHelper.declare (rec);
     // Compact constructor has no parentheses after the record name
@@ -425,12 +425,12 @@ public final class JRecordTest
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package ("org.example")._record ("Point");
 
-    final JRecordComponent xComp = rec.recordComponent (cm.INT, "x");
-    final JRecordComponent yComp = rec.recordComponent (cm.INT, "y");
+    final JRecordComponent rcX = rec.recordComponent (cm.INT, "x");
+    final JRecordComponent rcY = rec.recordComponent (cm.INT, "y");
 
     rec.javadoc ().add ("Represents a 2D point.");
-    rec.javadoc ().addParam (xComp).add ("the x coordinate");
-    rec.javadoc ().addParam (yComp).add ("the y coordinate");
+    rec.javadoc ().addParam (rcX).add ("the x coordinate");
+    rec.javadoc ().addParam (rcY).add ("the y coordinate");
 
     final String output = CodeModelTestsHelper.declare (rec);
     assertTrue (output.contains ("@param x\n *     the x coordinate"));
