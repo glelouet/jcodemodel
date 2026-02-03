@@ -55,6 +55,8 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.style.ReturnsImmutableObject;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.jcodemodel.util.ClassNameComparator;
 import com.helger.jcodemodel.writer.JFormatter;
@@ -141,6 +143,16 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
    * significant, because of order ID they get. So let's preserve the order.
    */
   private final Map <String, JEnumConstant> m_aEnumConstantsByName = new LinkedHashMap <> ();
+
+  /**
+   * Record components for record types. Order is significant.
+   */
+  private final List <JRecordComponent> m_aRecordComponents = new ArrayList <> ();
+
+  /**
+   * Compact constructor for record types, if defined.
+   */
+  private JMethod m_aCompactConstructor;
 
   /**
    * Annotations on this variable. Lazily created.
@@ -245,6 +257,15 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   }
 
   /**
+   * @return <code>true</code> if this is a record type, <code>false</code> otherwise.
+   * @since 4.2.0
+   */
+  public boolean isRecord ()
+  {
+    return getClassType () == EClassType.RECORD;
+  }
+
+  /**
    * This class extends the specified class.
    *
    * @param aSuperClass
@@ -342,7 +363,7 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
 
   /**
    * Check if a specific enum constant name is already in use
-   * 
+   *
    * @param sName
    *        Enum constant name to check. May not be <code>null</code>.
    * @return <code>true</code> if it is contained, <code>false</code> otherwise
@@ -350,6 +371,145 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   public boolean containsEnumConstant (@NonNull final String sName)
   {
     return m_aEnumConstantsByName.containsKey (sName);
+  }
+
+  /**
+   * Adds a component to this record.
+   *
+   * @param aType
+   *        Type of the component. May not be <code>null</code>.
+   * @param sName
+   *        Name of the component. May not be <code>null</code>.
+   * @return The newly created record component.
+   * @throws IllegalStateException
+   *         If this is not a record type.
+   * @since 4.2.0
+   */
+  @NonNull
+  public JRecordComponent recordComponent (@NonNull final AbstractJType aType, @NonNull final String sName)
+  {
+    ValueEnforcer.notNull (aType, "Type");
+    ValueEnforcer.notNull (sName, "Name");
+
+    if (!isRecord ())
+      throw new IllegalStateException ("recordComponent() is only valid for record types");
+
+    final JRecordComponent comp = new JRecordComponent (this, aType, sName, false);
+    m_aRecordComponents.add (comp);
+    return comp;
+  }
+
+  /**
+   * Adds a component to this record using a Class reference.
+   *
+   * @param aType
+   *        Type of the component. May not be <code>null</code>.
+   * @param sName
+   *        Name of the component. May not be <code>null</code>.
+   * @return The newly created record component.
+   * @throws IllegalStateException
+   *         If this is not a record type.
+   * @since 4.2.0
+   */
+  @NonNull
+  public JRecordComponent recordComponent (@NonNull final Class <?> aType, @NonNull final String sName)
+  {
+    return recordComponent (owner ().ref (aType), sName);
+  }
+
+  /**
+   * Adds a varargs component to this record. This must be the last component.
+   *
+   * @param aType
+   *        The component type of the varargs array. May not be <code>null</code>.
+   * @param sName
+   *        Name of the component. May not be <code>null</code>.
+   * @return The newly created record component.
+   * @throws IllegalStateException
+   *         If this is not a record type.
+   * @since 4.2.0
+   */
+  @NonNull
+  public JRecordComponent recordComponentVararg (@NonNull final AbstractJType aType, @NonNull final String sName)
+  {
+    ValueEnforcer.notNull (aType, "Type");
+    ValueEnforcer.notNull (sName, "Name");
+
+    if (!isRecord ())
+      throw new IllegalStateException ("recordComponentVararg() is only valid for record types");
+
+    final JRecordComponent comp = new JRecordComponent (this, aType.array (), sName, true);
+    m_aRecordComponents.add (comp);
+    return comp;
+  }
+
+  /**
+   * @return The modifiable list of record components. Never <code>null</code>.
+   * @since 4.2.0
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public List <JRecordComponent> recordComponentsMutable ()
+  {
+    return m_aRecordComponents;
+  }
+
+  /**
+   * @return The unmodifiable list of record components. Never <code>null</code>.
+   * @since 4.2.0
+   */
+  @NonNull
+  @ReturnsImmutableObject
+  public List <JRecordComponent> recordComponents ()
+  {
+    return Collections.unmodifiableList (m_aRecordComponents);
+  }
+
+  /**
+   * Creates a compact constructor for this record. A compact constructor has no parameter list and
+   * is used for validation or normalization of record components.
+   * <p>
+   * Example:
+   * 
+   * <pre>
+   * public record Range (int lo, int hi)
+   * {
+   *   public Range
+   *   {
+   *     if (lo &gt; hi)
+   *       throw new IllegalArgumentException ();
+   *   }
+   * }
+   * </pre>
+   *
+   * @param nMods
+   *        Modifiers for this constructor (typically {@link JMod#PUBLIC}).
+   * @return The newly created compact constructor.
+   * @throws IllegalStateException
+   *         If this is not a record type or a compact constructor already exists.
+   * @since 4.2.0
+   */
+  @NonNull
+  public JMethod compactConstructor (final int nMods)
+  {
+    if (!isRecord ())
+      throw new IllegalStateException ("compactConstructor() is only valid for record types");
+
+    if (m_aCompactConstructor != null)
+      throw new IllegalStateException ("Another compact constructor has already been defined");
+
+    m_aCompactConstructor = new JMethod (nMods, this);
+    return m_aCompactConstructor;
+  }
+
+  /**
+   * @return The compact constructor for record types. May be <code>null</code>.
+   * @since 4.2.0
+   */
+  @Nullable
+  public JMethod compactConstructor ()
+  {
+    return m_aCompactConstructor;
   }
 
   @Override
@@ -530,13 +690,13 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   {
     return m_aConstructors.iterator ();
   }
-  
+
   /**
    * @return a stream of the declared constructors
    */
-  public Stream<JMethod> constructorsStream()
+  public Stream <JMethod> constructorsStream ()
   {
-    return m_aConstructors.stream();
+    return m_aConstructors.stream ();
   }
 
   /**
@@ -665,14 +825,31 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
         f.generable (aAnnotation).newline ();
 
     // Modifiers (private, protected, public)
-    // Type of class (class, interface, enum, @interface)
+    // Type of class (class, interface, enum, @interface, record)
     // Name of the class
     // Class wildcards
     f.generable (m_aMods).print (getClassType ().declarationToken ()).id (name ()).declaration (m_aGenerifiable);
 
+    // For records, output the component list
+    if (isRecord ())
+    {
+      f.print ('(');
+      boolean bFirst = true;
+      for (final JRecordComponent comp : m_aRecordComponents)
+      {
+        if (bFirst)
+          bFirst = false;
+        else
+          f.print (',');
+        f.generable (comp);
+      }
+      f.print (')');
+    }
+
     // If a super class is defined and is not "Object"
+    // Note: Records cannot extend classes (they implicitly extend java.lang.Record)
     boolean bHasSuperClass = false;
-    if (m_aSuperClass != null && m_aSuperClass != owner ().ref (Object.class))
+    if (!isRecord () && m_aSuperClass != null && m_aSuperClass != owner ().ref (Object.class))
     {
       bHasSuperClass = true;
       f.newline ().indent ().print ("extends").generable (m_aSuperClass).newline ().outdent ();
@@ -727,7 +904,23 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
     if (m_aInstanceInit != null)
       f.newline ().statement (m_aInstanceInit);
 
-    // All constructors
+    // Compact constructor for records (special syntax without parameter list)
+    if (m_aCompactConstructor != null)
+    {
+      f.newline ();
+      // Output javadoc if present
+      if (m_aCompactConstructor.hasJavadoc ())
+        f.generable (m_aCompactConstructor.javadoc ());
+      // Output annotations
+      for (final JAnnotationUse annotation : m_aCompactConstructor.annotations ())
+        f.generable (annotation).newline ();
+      // Output modifiers and name only (no parentheses)
+      f.generable (m_aCompactConstructor.mods ()).id (name ());
+      // Output body
+      f.statement (m_aCompactConstructor.body ());
+    }
+
+    // All regular constructors
     for (final JMethod m : m_aConstructors)
       f.newline ().declaration (m);
 

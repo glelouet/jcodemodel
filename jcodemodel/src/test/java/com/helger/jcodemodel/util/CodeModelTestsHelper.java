@@ -264,7 +264,7 @@ public final class CodeModelTestsHelper
     parser.setSource (aCode);
     parser.setUnitName (sUnitName);
     final Map <String, String> aOptions = new HashMap <> ();
-    aOptions.put (CompilerOptions.OPTION_Source, "1.8");
+    aOptions.put (CompilerOptions.OPTION_Source, "17");
     parser.setCompilerOptions (aOptions);
 
     final IProgressMonitor aPM = null;

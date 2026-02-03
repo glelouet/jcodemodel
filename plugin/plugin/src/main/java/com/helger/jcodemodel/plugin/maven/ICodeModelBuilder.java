@@ -39,6 +39,10 @@ public interface ICodeModelBuilder
   default void configure (@NonNull final Map <String, String> params)
   {}
 
+  /**
+   * @param header
+   *        The class header to be used. May be <code>null</code>.
+   */
   default void setClassHeader (@Nullable final String header)
   {}
 
