@@ -60,6 +60,9 @@ public final class JAnnotatedClassTest
 {
   /**
    * Test basic type-use annotation: {@code @Deprecated String}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testSimpleTypeAnnotation () throws JCodeModelException
@@ -84,7 +87,11 @@ public final class JAnnotatedClassTest
   }
 
   /**
-   * Test type-use annotation on generic type parameter: {@code java.util.List<@java.lang.Deprecated java.lang.String>}
+   * Test type-use annotation on generic type parameter:
+   * {@code java.util.List<@java.lang.Deprecated java.lang.String>}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedTypeParameter () throws JCodeModelException
@@ -106,6 +113,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test multiple type-use annotations: {@code @Deprecated @Override String}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testMultipleTypeAnnotations () throws JCodeModelException
@@ -128,6 +138,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test annotated type with initializer.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedFieldWithInitializer () throws JCodeModelException
@@ -153,6 +166,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test that erasure returns the underlying class without annotations.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testErasure () throws JCodeModelException
@@ -166,6 +182,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test that basis() returns the wrapped class.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testBasis () throws JCodeModelException
@@ -179,6 +198,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test annotating an already narrowed class.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotateNarrowedClass () throws JCodeModelException
@@ -203,6 +225,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test complex nested annotations: {@code Map<@A String, List<@B Integer>>}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testNestedAnnotatedTypes () throws JCodeModelException
@@ -234,6 +259,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test that the annotated class works correctly in method parameters.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedMethodParameter () throws JCodeModelException
@@ -259,6 +287,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test that the annotated class works correctly as method return type.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedReturnType () throws JCodeModelException
@@ -283,7 +314,11 @@ public final class JAnnotatedClassTest
   }
 
   /**
-   * Test equals and hashCode - two annotated classes with same basis and annotations should be equal.
+   * Test equals and hashCode - two annotated classes with same basis and annotations should be
+   * equal.
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testEqualsAndHashCode () throws JCodeModelException
@@ -305,6 +340,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test annotated array type: {@code @Deprecated String[]}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedArrayType () throws JCodeModelException
@@ -327,6 +365,9 @@ public final class JAnnotatedClassTest
 
   /**
    * Test annotated primitive array type: {@code @Deprecated int[]}
+   * 
+   * @throws JCodeModelException
+   *         In case of error
    */
   @Test
   public void testAnnotatedPrimitiveArrayType () throws JCodeModelException
