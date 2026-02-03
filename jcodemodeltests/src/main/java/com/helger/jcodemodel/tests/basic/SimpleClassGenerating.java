@@ -1,4 +1,4 @@
-package com.helger.jcodemodel.tests;
+package com.helger.jcodemodel.tests.basic;
 
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.compile.annotation.TestJCM;

@@ -12,6 +12,11 @@
       <groupId>com.helger</groupId>
       <artifactId>jcodemodel</artifactId>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -38,9 +43,20 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <configuration>
-          <mainClass>com.helger.jcodemodel.compile.annotation.GenerateTestFiles</mainClass>
-        </configuration>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <id>generatetestfiles</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <arguments>${project.basedir}</arguments>
+              <mainClass>com.helger.jcodemodel.compile.annotation.GenerateTestFiles</mainClass>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 

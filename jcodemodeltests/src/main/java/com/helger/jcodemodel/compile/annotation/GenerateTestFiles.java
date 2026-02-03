@@ -23,6 +23,15 @@ public class GenerateTestFiles {
 
   private final File classScanDir;
 
+  public static void main(String[] args) {
+    String rootPath = args == null || args.length == 0 ? "." : args[0];
+    System.out.println("root is " + rootPath);
+    File outputFile = new File(rootPath, OUTPUT_DIR);
+    File classScanDir = new File(rootPath, CLASS_SCAN_DIR);
+    new GenerateTestFiles(outputFile, classScanDir)
+        .apply();
+  }
+
   public GenerateTestFiles(File outputDir, File classScanDir) {
     this.outputDir = outputDir;
     this.classScanDir = classScanDir;
@@ -35,14 +44,7 @@ public class GenerateTestFiles {
 
   }
 
-  public static void main(String[] args) {
-    File outputFile = new File(OUTPUT_DIR);
-    File classScanDir = new File(CLASS_SCAN_DIR);
-    new GenerateTestFiles(outputFile, classScanDir).apply();
-
-  }
-
-  static void delete(File file) {
+  void delete(File file) {
     if (file.isDirectory()) {
       for (File sub : file.listFiles()) {
         delete(sub);
@@ -55,13 +57,16 @@ public class GenerateTestFiles {
     return scanClasses(rootDir, "", Stream.of());
   }
 
-  Stream<String> scanClasses(File dir, String packageName , Stream<String> stream) {
+  Stream<String> scanClasses(File dir, String packageName, Stream<String> stream) {
     List<String> newFound = new ArrayList<>();
-    for(File child : dir.listFiles()) {
-      if(child.isDirectory()) {
+    if(!dir.isDirectory()) {
+      throw new RuntimeException("file " + dir.getAbsolutePath() + " expected to be a dir");
+    }
+    for (File child : dir.listFiles()) {
+      if (child.isDirectory()) {
         stream = scanClasses(child, (packageName.isEmpty() ? "" : packageName + ".") + child.getName(), stream);
 
-      } else if(child.isFile() && child.getName().endsWith(".java")) {
+      } else if (child.isFile() && child.getName().endsWith(".java")) {
         newFound.add(packageName + "." + child.getName().replace(".java", ""));
       }
     }
