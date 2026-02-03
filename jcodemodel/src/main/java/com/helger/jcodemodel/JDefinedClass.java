@@ -55,6 +55,8 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.style.ReturnsImmutableObject;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.jcodemodel.util.ClassNameComparator;
 import com.helger.jcodemodel.writer.JFormatter;
@@ -255,6 +257,15 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   }
 
   /**
+   * @return <code>true</code> if this is a record type, <code>false</code> otherwise.
+   * @since 4.2.0
+   */
+  public boolean isRecord ()
+  {
+    return getClassType () == EClassType.RECORD;
+  }
+
+  /**
    * This class extends the specified class.
    *
    * @param aSuperClass
@@ -377,10 +388,11 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JRecordComponent recordComponent (@NonNull final AbstractJType aType, @NonNull final String sName)
   {
-    if (!isRecord())
-      throw new IllegalStateException("recordComponent() is only valid for record types");
     ValueEnforcer.notNull (aType, "Type");
     ValueEnforcer.notNull (sName, "Name");
+
+    if (!isRecord ())
+      throw new IllegalStateException ("recordComponent() is only valid for record types");
 
     final JRecordComponent comp = new JRecordComponent (this, aType, sName, false);
     m_aRecordComponents.add (comp);
@@ -420,10 +432,11 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JRecordComponent recordComponentVararg (@NonNull final AbstractJType aType, @NonNull final String sName)
   {
-    if (!isRecord())
-      throw new IllegalStateException("recordComponentVararg() is only valid for record types");
     ValueEnforcer.notNull (aType, "Type");
     ValueEnforcer.notNull (sName, "Name");
+
+    if (!isRecord ())
+      throw new IllegalStateException ("recordComponentVararg() is only valid for record types");
 
     final JRecordComponent comp = new JRecordComponent (this, aType.array (), sName, true);
     m_aRecordComponents.add (comp);
@@ -431,25 +444,41 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   }
 
   /**
-   * @return The list of record components. Never <code>null</code>.
+   * @return The modifiable list of record components. Never <code>null</code>.
    * @since 4.2.0
    */
   @NonNull
+  @ReturnsMutableObject
+  public List <JRecordComponent> recordComponentsMutable ()
+  {
+    return m_aRecordComponents;
+  }
+
+  /**
+   * @return The unmodifiable list of record components. Never <code>null</code>.
+   * @since 4.2.0
+   */
+  @NonNull
+  @ReturnsImmutableObject
   public List <JRecordComponent> recordComponents ()
   {
     return Collections.unmodifiableList (m_aRecordComponents);
   }
 
   /**
-   * Creates a compact constructor for this record. A compact constructor has no
-   * parameter list and is used for validation or normalization of record components.
+   * Creates a compact constructor for this record. A compact constructor has no parameter list and
+   * is used for validation or normalization of record components.
    * <p>
    * Example:
+   * 
    * <pre>
-   * public record Range(int lo, int hi) {
-   *     public Range {
-   *         if (lo &gt; hi) throw new IllegalArgumentException();
-   *     }
+   * public record Range (int lo, int hi)
+   * {
+   *   public Range
+   *   {
+   *     if (lo &gt; hi)
+   *       throw new IllegalArgumentException ();
+   *   }
    * }
    * </pre>
    *
@@ -463,33 +492,24 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   @NonNull
   public JMethod compactConstructor (final int nMods)
   {
-    if (!isRecord())
-      throw new IllegalStateException("compactConstructor() is only valid for record types");
+    if (!isRecord ())
+      throw new IllegalStateException ("compactConstructor() is only valid for record types");
 
     if (m_aCompactConstructor != null)
-      throw new IllegalStateException("A compact constructor has already been defined");
+      throw new IllegalStateException ("Another compact constructor has already been defined");
 
     m_aCompactConstructor = new JMethod (nMods, this);
     return m_aCompactConstructor;
   }
 
   /**
-   * @return The compact constructor if defined, <code>null</code> otherwise.
+   * @return The compact constructor for record types. May be <code>null</code>.
    * @since 4.2.0
    */
   @Nullable
   public JMethod compactConstructor ()
   {
     return m_aCompactConstructor;
-  }
-
-  /**
-   * @return <code>true</code> if this is a record type.
-   * @since 4.2.0
-   */
-  public boolean isRecord ()
-  {
-    return getClassType () == EClassType.RECORD;
   }
 
   @Override
@@ -670,13 +690,13 @@ public class JDefinedClass extends AbstractJClassContainer <JDefinedClass> imple
   {
     return m_aConstructors.iterator ();
   }
-  
+
   /**
    * @return a stream of the declared constructors
    */
-  public Stream<JMethod> constructorsStream()
+  public Stream <JMethod> constructorsStream ()
   {
-    return m_aConstructors.stream();
+    return m_aConstructors.stream ();
   }
 
   /**

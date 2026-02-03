@@ -47,23 +47,22 @@ import java.util.List;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 
 /**
  * A record component in a Java record declaration.
  * <p>
- * Record components are similar to constructor parameters but also define
- * the fields and accessor methods of the record. In the declaration
- * {@code record Point(int x, int y)}, {@code x} and {@code y} are record
- * components.
+ * Record components are similar to constructor parameters but also define the fields and accessor
+ * methods of the record. In the declaration {@code record Point(int x, int y)}, {@code x} and
+ * {@code y} are record components.
  * <p>
- * Annotations on record components can be propagated to the generated
- * field, accessor method, or constructor parameter depending on the
- * annotation's target.
+ * Annotations on record components can be propagated to the generated field, accessor method, or
+ * constructor parameter depending on the annotation's target.
  *
  * @since 4.2.0
  */
-public class  JRecordComponent implements IJAnnotatable, IJGenerable
+public class JRecordComponent implements IJAnnotatable, IJGenerable
 {
   /**
    * The record that owns this component.
@@ -104,7 +103,7 @@ public class  JRecordComponent implements IJAnnotatable, IJGenerable
    */
   JRecordComponent (@NonNull final JDefinedClass aOwner,
                     @NonNull final AbstractJType aType,
-                    @NonNull final String sName,
+                    @NonNull @Nonempty final String sName,
                     final boolean bVararg)
   {
     ValueEnforcer.notNull (aOwner, "Owner");
@@ -136,9 +135,10 @@ public class  JRecordComponent implements IJAnnotatable, IJGenerable
   }
 
   /**
-   * @return The name of this component. Never <code>null</code>.
+   * @return The name of this component. Neither <code>null</code> nor empty.
    */
   @NonNull
+  @Nonempty
   public String name ()
   {
     return m_sName;

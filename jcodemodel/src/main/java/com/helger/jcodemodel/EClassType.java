@@ -54,6 +54,7 @@ public enum EClassType
   INTERFACE ("interface"),
   ANNOTATION_TYPE_DECL ("@interface"),
   ENUM ("enum"),
+  // Introduced in Java 16
   RECORD ("record");
 
   /**
