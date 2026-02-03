@@ -30,6 +30,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
@@ -42,6 +43,8 @@ import com.helger.jcodemodel.writer.ProgressCodeWriter.IProgressTracker;
 @Mojo (name = "generate-source", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class GenerateSourceMojo extends AbstractMojo
 {
+  public static final String GENERATOR_CLASS_FILE = "jcodemodel/plugin/generator";
+
   /**
    * passed to the generator in case it needs project-specific variables, like path etc.
    */
@@ -131,10 +134,10 @@ public class GenerateSourceMojo extends AbstractMojo
     {
       getLog ().warn ("discarding source param " + source + " as data is already set");
     }
-    try (final InputStream source = StringHelper.isEmpty (data) ? findSource () : new NonBlockingByteArrayInputStream (
-                                                                                                                       data.getBytes (StandardCharsets.UTF_8)))
+    try (final InputStream aIS = StringHelper.isEmpty (data) ? findSource () : new NonBlockingByteArrayInputStream (data
+                                                                                                                        .getBytes (StandardCharsets.UTF_8)))
     {
-      cmb.build (cm, source);
+      cmb.build (cm, aIS);
       new JCMWriter (cm).build (dir, (IProgressTracker) null);
     }
     catch (JCodeModelException | IOException e)
@@ -144,8 +147,9 @@ public class GenerateSourceMojo extends AbstractMojo
   }
 
   /**
-   * deduce the out java files output folder
+   * @return the java files output folder
    */
+  @NonNull
   protected File javaOutputFolder ()
   {
     if (outputDir == null || outputDir.isBlank ())
@@ -156,8 +160,6 @@ public class GenerateSourceMojo extends AbstractMojo
 
     return new File (project.getBasedir (), outputDir);
   }
-
-  public static final String GENERATOR_CLASS_FILE = "jcodemodel/plugin/generator";
 
   /*
    * deduce the generator's class and instantiate it
