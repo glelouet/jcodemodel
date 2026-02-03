@@ -53,7 +53,8 @@ public enum EClassType
   CLASS ("class"),
   INTERFACE ("interface"),
   ANNOTATION_TYPE_DECL ("@interface"),
-  ENUM ("enum");
+  ENUM ("enum"),
+  RECORD ("record");
 
   /**
    * The keyword used to declare this type.

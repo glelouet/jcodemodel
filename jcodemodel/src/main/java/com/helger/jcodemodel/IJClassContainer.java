@@ -226,6 +226,40 @@ public interface IJClassContainer <CLASSTYPE extends IJClassContainer <CLASSTYPE
   }
 
   /**
+   * Add a public record to this package/class.
+   *
+   * @param sName
+   *        Name of the record to be added
+   * @return newly created record
+   * @throws JCodeModelException
+   *         If another class/interface/... with the same name already exists
+   * @since 4.2.0
+   */
+  @NonNull
+  default CLASSTYPE _record (@NonNull final String sName) throws JCodeModelException
+  {
+    return _record (JMod.PUBLIC, sName);
+  }
+
+  /**
+   * Add a record to this package/class.
+   *
+   * @param nMods
+   *        Modifiers for this record declaration
+   * @param sName
+   *        Name of the record to be added
+   * @return newly created record
+   * @throws JCodeModelException
+   *         If another class/interface/... with the same name already exists
+   * @since 4.2.0
+   */
+  @NonNull
+  default CLASSTYPE _record (final int nMods, @NonNull final String sName) throws JCodeModelException
+  {
+    return _class (nMods, sName, EClassType.RECORD);
+  }
+
+  /**
    * @return A collection with all nested classes defined in this class. Never <code>null</code>.
    */
   @NonNull

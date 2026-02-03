@@ -161,6 +161,19 @@ public class JDocComment extends JCommentPart implements IJGenerable, IJOwned
     return addParam (sParam.name ());
   }
 
+  /**
+   * Append a text to an @param tag for a record component.
+   *
+   * @param aComponent
+   *        Record component to be added
+   * @return The created {@link JCommentPart}
+   * @since 4.2.0
+   */
+  public JCommentPart addParam (@NonNull final JRecordComponent aComponent)
+  {
+    return addParam (aComponent.name ());
+  }
+
   @Nullable
   public JCommentPart removeParam (@Nullable final String sParam)
   {
