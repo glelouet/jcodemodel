@@ -731,6 +731,26 @@ public class JBlock implements IJGenerable, IJStatement
   }
 
   /**
+   * Create a throw statement and add it to this block
+   *
+   * @param aThrowClass
+   *        Exception class to be thrown. May not be <code>null</code>.
+   * @param aParams
+   *        Optional expressions to be used as parameters to the exception.
+   * @return Newly created {@link JThrow}
+   * @since 4.2.0
+   */
+  @NonNull
+  public JThrow _throw (@NonNull final AbstractJClass aThrowClass, @NonNull final IJExpression @Nullable... aParams)
+  {
+    final JInvocation aCtor = JExpr._new (aThrowClass);
+    if (aParams != null)
+      for (final IJExpression aParam : aParams)
+        aCtor.arg (aParam);
+    return _throw (aCtor);
+  }
+
+  /**
    * Create a break statement without a label and add it to this block
    *
    * @return Newly created {@link JBreak}

@@ -245,7 +245,7 @@ public final class JRecordTest
     compactCtor.body ()
                ._if (JExpr.ref (rcLo).gt (JExpr.ref (rcHi)))
                ._then ()
-               ._throw (cm.ref (IllegalArgumentException.class));
+               ._throw (cm.ref (IllegalArgumentException.class), JExpr.lit ("High must be greater or equal to Low"));
 
     final String output = CodeModelTestsHelper.declare (rec);
     // Compact constructor has no parentheses after the record name
