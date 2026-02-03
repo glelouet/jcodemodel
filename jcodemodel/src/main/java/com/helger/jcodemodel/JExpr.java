@@ -208,7 +208,9 @@ public final class JExpr
   }
 
   @NonNull
-  public static JInvocation invoke (@Nullable final JCodeModel aOwner, @Nullable final IJExpression aLhs, @NonNull final String sMethod)
+  public static JInvocation invoke (@Nullable final JCodeModel aOwner,
+                                    @Nullable final IJExpression aLhs,
+                                    @NonNull final String sMethod)
   {
     return new JInvocation (aOwner, aLhs, sMethod);
   }
@@ -232,6 +234,12 @@ public final class JExpr
   }
 
   @NonNull
+  public static JFieldRef ref (@NonNull final JRecordComponent aRecordComponent)
+  {
+    return ref (null, aRecordComponent.name ());
+  }
+
+  @NonNull
   public static JFieldRef ref (@Nullable final IJExpression aLhs, @NonNull final JVar aField)
   {
     return new JFieldRef (aLhs, aField);
@@ -244,14 +252,12 @@ public final class JExpr
   }
 
   /**
-   * Create a fully qualified reference to an enum constant in the form
-   * <code>class.enumentry</code>
+   * Create a fully qualified reference to an enum constant in the form <code>class.enumentry</code>
    *
    * @param aType
    *        Class/type to use. May not be <code>null</code>.
    * @param sName
-   *        Name of the enum constant. May neither be <code>null</code> nor
-   *        empty.
+   *        Name of the enum constant. May neither be <code>null</code> nor empty.
    * @return [type].[name]
    */
   @NonNull
@@ -282,6 +288,18 @@ public final class JExpr
     return new JFieldRef (null, sField, true);
   }
 
+  /**
+   * @param aRecordComponent
+   *        Record component name to reference
+   * @return [this].[field]
+   * @since 4.2.0
+   */
+  @NonNull
+  public static JFieldRef refthis (@NonNull final JRecordComponent aRecordComponent)
+  {
+    return new JFieldRef (null, aRecordComponent.name (), true);
+  }
+
   @NonNull
   public static JFieldRef refthis (@Nullable final IJExpression aLhs, @NonNull final JVar aField)
   {
@@ -305,7 +323,7 @@ public final class JExpr
   public static IJExpression dotClass (@NonNull final AbstractJType aClass)
   {
     return (@NonNull final IJFormatter f) -> {
-      final AbstractJType c = aClass instanceof JNarrowedClass ? ((JNarrowedClass) aClass).basis () : aClass;
+      final AbstractJType c = aClass instanceof final JNarrowedClass j ? j.basis () : aClass;
       f.generable (c).print (".class");
     };
   }
@@ -417,8 +435,7 @@ public final class JExpr
   }
 
   /**
-   * Escapes the given string, then surrounds it by the specified quotation
-   * mark.
+   * Escapes the given string, then surrounds it by the specified quotation mark.
    *
    * @param cQuote
    *        Quote char. Either single quote (') or double quote (")
@@ -491,12 +508,10 @@ public final class JExpr
   /**
    * Creates an aExpr directly from a source code fragment.
    * <p>
-   * This method can be used as a short-cut to create a JExpression. For
-   * example, instead of <code>_a.gt(_b)</code>, you can write it as:
-   * <code>JExpr.direct("a&gt;b")</code>.
+   * This method can be used as a short-cut to create a JExpression. For example, instead of
+   * <code>_a.gt(_b)</code>, you can write it as: <code>JExpr.direct("a&gt;b")</code>.
    * <p>
-   * Be warned that there is a danger in using this method, as it obfuscates the
-   * object model.
+   * Be warned that there is a danger in using this method, as it obfuscates the object model.
    *
    * @param sSourceCode
    *        Java source code
@@ -509,9 +524,8 @@ public final class JExpr
   }
 
   /**
-   * Just a sanity wrapper around
-   * {@link JOp#cond(IJExpression, IJExpression, IJExpression)} for easier
-   * finding.
+   * Just a sanity wrapper around {@link JOp#cond(IJExpression, IJExpression, IJExpression)} for
+   * easier finding.
    *
    * @param aCond
    *        Condition

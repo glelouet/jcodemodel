@@ -275,7 +275,6 @@ public final class JRecordTest
    * @throws JCodeModelException
    *         In case of error
    */
-  @SuppressWarnings ("unused")
   @Test
   public void testRecordWithCanonicalConstructor () throws JCodeModelException
   {
@@ -290,8 +289,8 @@ public final class JRecordTest
     final JVar hiParam = ctor.param (cm.INT, "hi");
     ctor.body ()._if (loParam.gt (hiParam))._then ()._throw (JExpr._new (cm.ref (IllegalArgumentException.class)));
     // This could be done nicer...
-    ctor.body ().assign (JExpr._this ().ref ("lo"), loParam);
-    ctor.body ().assign (JExpr._this ().ref ("hi"), hiParam);
+    ctor.body ().assign (JExpr.refthis (loComp), loParam);
+    ctor.body ().assign (JExpr.refthis (hiComp), hiParam);
 
     final String output = CodeModelTestsHelper.declare (rec);
     // Compact constructor has no parentheses after the record name
@@ -322,14 +321,14 @@ public final class JRecordTest
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package ("org.example")._record ("Point");
-    rec.recordComponent (cm.INT, "x");
-    rec.recordComponent (cm.INT, "y");
+    final JRecordComponent rcX = rec.recordComponent (cm.INT, "x");
+    final JRecordComponent rcY = rec.recordComponent (cm.INT, "y");
 
     final JMethod method = rec.method (JMod.PUBLIC, cm.DOUBLE, "distance");
     method.body ()
           ._return (cm.ref (Math.class)
                       .staticInvoke ("sqrt")
-                      .arg (JExpr.ref ("x").mul (JExpr.ref ("x")).plus (JExpr.ref ("y").mul (JExpr.ref ("y")))));
+                      .arg (JExpr.ref (rcX).mul (JExpr.ref (rcX)).plus (JExpr.ref (rcY).mul (JExpr.ref (rcY)))));
 
     CodeModelTestsHelper.parseCodeModel (cm);
   }
