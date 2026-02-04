@@ -12,6 +12,7 @@ import com.helger.jcodemodel.JMethod;
 import com.helger.jcodemodel.JMod;
 import com.helger.jcodemodel.JRecordComponent;
 import com.helger.jcodemodel.JTypeVar;
+import com.helger.jcodemodel.JVar;
 import com.helger.jcodemodel.compile.annotation.TestJCM;
 import com.helger.jcodemodel.exceptions.JCodeModelException;
 
@@ -33,7 +34,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *                             In case of error
    */
-  public JCodeModel genBasicRecord () throws JCodeModelException
+  public JCodeModel testBasicRecord() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package (rootPackage)._record ("BasicPoint");
@@ -53,7 +54,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *         In case of error
    */
-  public JCodeModel genEmptyRecord () throws JCodeModelException
+  public JCodeModel testEmptyRecord() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel ();
     cm._package(rootPackage)._record("Empty");
@@ -71,7 +72,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *         In case of error
    */
-  public JCodeModel genRecordWithObjectComponents () throws JCodeModelException
+  public JCodeModel testRecordWithObjectComponents() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package (rootPackage)._record ("Person");
@@ -91,7 +92,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *         In case of error
    */
-  public JCodeModel genRecordImplementsInterface () throws JCodeModelException
+  public JCodeModel testRecordImplementsInterface() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel ();
     final JDefinedClass rec = cm._package (rootPackage)._record ("NamedPoint");
@@ -116,7 +117,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *                             In case of error
    */
-  public JCodeModel genGenericRecord() throws JCodeModelException
+  public JCodeModel testGenericRecord() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel();
     final JDefinedClass rec = cm._package(rootPackage)._record("Pair");
@@ -138,7 +139,7 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *                             In case of error
    */
-  public JCodeModel genRecordWithAnnotatedComponent() throws JCodeModelException
+  public JCodeModel testRecordWithAnnotatedComponent() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel();
     final JDefinedClass rec = cm._package(rootPackage)._record("AnnotatedPerson");
@@ -155,6 +156,106 @@ public class JRecordTestGen {
   @Target(ElementType.RECORD_COMPONENT)
   public @interface RecordAnnotationExample
   {
+  }
+
+  /**
+   * Test: Record with compact constructor (validation) Expected output:
+   *
+   * <pre>
+   * public record Range(int lo, int hi) {
+   * 	public Range {
+   * 		if (lo > hi) {
+   * 			throw new IllegalArgumentException();
+   * 		}
+   * 	}
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithCompactConstructor() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("Range");
+    final JRecordComponent rcLo = rec.recordComponent(cm.INT, "lo");
+    final JRecordComponent rcHi = rec.recordComponent(cm.INT, "hi");
+
+    // Compact constructor - no parameter list, just validation logic
+    final JMethod compactCtor = rec.compactConstructor(JMod.PUBLIC);
+    compactCtor.body()
+        ._if(JExpr.ref(rcLo).gt(JExpr.ref(rcHi)))
+        ._then()
+        ._throw(cm.ref(IllegalArgumentException.class), JExpr.lit("High must be greater or equal to Low"));
+    return cm;
+  }
+
+  /**
+   * Test: Record with explicit canonical constructor Expected output:
+   *
+   * <pre>
+   * public record Range(int lo, int hi) {
+   * 	public Range(int lo, int hi) {
+   * 		if (lo > hi) {
+   * 			throw new IllegalArgumentException();
+   * 		}
+   * 		this.lo = lo;
+   * 		this.hi = hi;
+   * 	}
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithCanonicalConstructor() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("RangeCanonical");
+    final JRecordComponent rcLo = rec.recordComponent(cm.INT, "lo");
+    final JRecordComponent rcHi = rec.recordComponent(cm.INT, "hi");
+
+    // Canonical constructor - must have same parameters as record components
+    final JMethod ctor = rec.constructor(JMod.PUBLIC);
+    final JVar loParam = ctor.param(cm.INT, "lo");
+    final JVar hiParam = ctor.param(cm.INT, "hi");
+    ctor.body()._if(loParam.gt(hiParam))._then()
+        ._throw(cm.ref(IllegalArgumentException.class),
+            JExpr.lit("lo must be < hi"));
+    ctor.body().assign(JExpr.refthis(rcLo), loParam);
+    ctor.body().assign(JExpr.refthis(rcHi), hiParam);
+    return cm;
+  }
+
+  /**
+   * Test: Record with additional instance method Expected output:
+   *
+   * <pre>
+   * public record Point (int x, int y)
+   * {
+   *   public double distance ()
+   *   {
+   *     return Math.sqrt ((x * x) + (y * y));
+   *   }
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *         In case of error
+   */
+  public JCodeModel testRecordWithMethod () throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel ();
+    final JDefinedClass rec = cm._package(rootPackage)._record("PointDistance");
+    final JRecordComponent rcX = rec.recordComponent (cm.INT, "x");
+    final JRecordComponent rcY = rec.recordComponent (cm.INT, "y");
+
+    final JMethod method = rec.method (JMod.PUBLIC, cm.DOUBLE, "distance");
+    method.body ()
+          ._return (cm.ref (Math.class)
+                      .staticInvoke ("sqrt")
+                      .arg (JExpr.ref (rcX).mul (JExpr.ref (rcX)).plus (JExpr.ref (rcY).mul (JExpr.ref (rcY)))));
+    return cm;
   }
 
 }

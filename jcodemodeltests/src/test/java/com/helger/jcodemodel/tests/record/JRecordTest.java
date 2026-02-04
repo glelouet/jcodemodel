@@ -47,14 +47,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.helger.jcodemodel.exceptions.JCodeModelException;
-import com.helger.jcodemodel.tests.basic.record.AnnotatedPerson;
-import com.helger.jcodemodel.tests.basic.record.BasicPoint;
-import com.helger.jcodemodel.tests.basic.record.Empty;
-import com.helger.jcodemodel.tests.basic.record.JRecordTestGen;
+import com.helger.jcodemodel.tests.basic.record.*;
 import com.helger.jcodemodel.tests.basic.record.JRecordTestGen.RecordAnnotationExample;
-import com.helger.jcodemodel.tests.basic.record.NamedPoint;
-import com.helger.jcodemodel.tests.basic.record.Pair;
-import com.helger.jcodemodel.tests.basic.record.Person;
 
 /**
  * Test class for Java record support. Java records (JEP 395, Java 16+) are a special kind of class
@@ -66,7 +60,7 @@ public final class JRecordTest
 {
 
   /**
-   * tests {@link JRecordTestGen#genBasicRecord()}
+   * tests {@link JRecordTestGen#testBasicRecord()}
    */
   @Test
   public void testBasicRecord () throws JCodeModelException
@@ -78,7 +72,7 @@ public final class JRecordTest
   }
 
   /**
-   * tests {@link JRecordTestGen#genEmptyRecord()}
+   * tests {@link JRecordTestGen#testEmptyRecord()}
    */
   @Test
   public void testEmptyRecord() throws JCodeModelException
@@ -88,7 +82,7 @@ public final class JRecordTest
   }
 
   /**
-   * tests {@link JRecordTestGen#genRecordWithObjectComponents()}
+   * tests {@link JRecordTestGen#testRecordWithObjectComponents()}
    */
   @Test
   public void testRecordWithObjectComponents () throws JCodeModelException
@@ -100,7 +94,7 @@ public final class JRecordTest
   }
 
   /**
-   * tests {@link JRecordTestGen#genRecordImplementsInterface()}
+   * tests {@link JRecordTestGen#testRecordImplementsInterface()}
    */
   @Test
   public void testRecordImplementsInterface() throws JCodeModelException
@@ -114,7 +108,7 @@ public final class JRecordTest
   }
 
   /**
-   * tests {@link JRecordTestGen#genGenericRecord()}
+   * tests {@link JRecordTestGen#testGenericRecord()}
    */
   @Test
   public void testGenericRecord() throws JCodeModelException
@@ -126,13 +120,13 @@ public final class JRecordTest
   }
 
   /**
-   * tests {@link JRecordTestGen#genRecordWithAnnotatedComponent()}
+   * tests {@link JRecordTestGen#testRecordWithAnnotatedComponent()}
    *
    * @throws SecurityException
    * @throws NoSuchFieldException
    */
   @Test
-  public void genRecordWithAnnotatedComponent() throws JCodeModelException, NoSuchFieldException, SecurityException
+  public void testRecordWithAnnotatedComponent() throws JCodeModelException, NoSuchFieldException, SecurityException
   {
     AnnotatedPerson test = new AnnotatedPerson("Salomon", 2000);
     Assert.assertTrue(test instanceof Record);
@@ -142,4 +136,38 @@ public final class JRecordTest
         .findFirst().get();
     Assert.assertTrue(fieldComponent.isAnnotationPresent(RecordAnnotationExample.class));
   }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithCompactConstructor()}
+   */
+  @Test
+  public void testRecordWithCompactConstructor() throws JCodeModelException
+  {
+    Range test = new Range(1, 5);
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertThrows(IllegalArgumentException.class, () -> new Range(5, 1));
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithCanonicalConstructor()}
+   */
+  @Test
+  public void testRecordWithCanonicalConstructor() throws JCodeModelException
+  {
+    RangeCanonical test = new RangeCanonical(1, 5);
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertThrows(IllegalArgumentException.class, () -> new RangeCanonical(5, 1));
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithMethod()}
+   */
+  @Test
+  public void testRecordWithMethod ()
+  {
+    PointDistance test = new PointDistance(0, 0);
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertEquals(0, test.distance(), 0.0);
+  }
+
 }
