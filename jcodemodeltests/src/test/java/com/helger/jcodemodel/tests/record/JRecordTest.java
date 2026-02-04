@@ -41,12 +41,12 @@
 package com.helger.jcodemodel.tests.record;
 
 import java.lang.reflect.RecordComponent;
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.helger.jcodemodel.exceptions.JCodeModelException;
 import com.helger.jcodemodel.tests.basic.record.*;
 import com.helger.jcodemodel.tests.basic.record.JRecordTestGen.RecordAnnotationExample;
 import com.helger.jcodemodel.tests.basic.record.Outer.Inner;
@@ -64,7 +64,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testBasicRecord()}
    */
   @Test
-  public void testBasicRecord () throws JCodeModelException
+  public void testBasicRecord()
   {
     BasicPoint test = new BasicPoint(2, 3);
     Assert.assertTrue(test instanceof Record);
@@ -76,7 +76,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testEmptyRecord()}
    */
   @Test
-  public void testEmptyRecord() throws JCodeModelException
+  public void testEmptyRecord()
   {
     Empty test = new Empty();
     Assert.assertTrue(test instanceof Record);
@@ -86,7 +86,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testRecordWithObjectComponents()}
    */
   @Test
-  public void testRecordWithObjectComponents () throws JCodeModelException
+  public void testRecordWithObjectComponents()
   {
     Person test = new Person("John", 42);
     Assert.assertTrue(test instanceof Record);
@@ -98,7 +98,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testRecordImplementsInterface()}
    */
   @Test
-  public void testRecordImplementsInterface() throws JCodeModelException
+  public void testRecordImplementsInterface()
   {
     NamedPoint test = new NamedPoint(5, 10, "15");
     Assert.assertTrue(test instanceof Record);
@@ -112,12 +112,22 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testGenericRecord()}
    */
   @Test
-  public void testGenericRecord() throws JCodeModelException
+  public void testGenericRecord()
   {
     Pair<Integer, String> test = new Pair<>(666, "BE NOT AFRAID");
     Assert.assertTrue(test instanceof Record);
     Assert.assertEquals((Integer) 666, test.first());
     Assert.assertEquals("BE NOT AFRAID", test.second());
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithBoundedTypeParameter()}
+   */
+  @Test
+  public void testRecordWithBoundedTypeParameter()
+  {
+    PairNumber<BigDecimal> test = new PairNumber<>(BigDecimal.ONE, BigDecimal.ZERO);
+    Assert.assertTrue(test instanceof Record);
   }
 
   /**
@@ -127,7 +137,7 @@ public final class JRecordTest
    * @throws NoSuchFieldException
    */
   @Test
-  public void testRecordWithAnnotatedComponent() throws JCodeModelException, NoSuchFieldException, SecurityException
+  public void testRecordWithAnnotatedComponent()
   {
     AnnotatedPerson test = new AnnotatedPerson("Salomon", 2000);
     Assert.assertTrue(test instanceof Record);
@@ -142,7 +152,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testRecordWithCompactConstructor()}
    */
   @Test
-  public void testRecordWithCompactConstructor() throws JCodeModelException
+  public void testRecordWithCompactConstructor()
   {
     Range test = new Range(1, 5);
     Assert.assertTrue(test instanceof Record);
@@ -153,7 +163,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testRecordWithCanonicalConstructor()}
    */
   @Test
-  public void testRecordWithCanonicalConstructor() throws JCodeModelException
+  public void testRecordWithCanonicalConstructor()
   {
     RangeCanonical test = new RangeCanonical(1, 5);
     Assert.assertTrue(test instanceof Record);
@@ -175,7 +185,7 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testRecordWithStaticMembers()}
    */
   @Test
-  public void testRecordWithStaticMembers() throws JCodeModelException
+  public void testRecordWithStaticMembers()
   {
     PointStatic test = PointStatic.ORIGIN;
     Assert.assertTrue(test instanceof Record);
@@ -188,11 +198,44 @@ public final class JRecordTest
    * tests {@link JRecordTestGen#testNestedRecord()}
    */
   @Test
-  public void testNestedRecord() throws JCodeModelException
+  public void testNestedRecord()
   {
     Inner test = new Inner("NaN");
     Assert.assertTrue(test instanceof Record);
     Assert.assertEquals("NaN", test.value());
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithJavadoc()}
+   */
+  @Test
+  public void testRecordWithJavadoc() {
+    // nothing to do to test javadoc ??
+    PointJavadoc test = new PointJavadoc(0, 0);
+    Assert.assertTrue(test instanceof Record);
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithVarargsComponent()}
+   */
+  @Test
+  public void testRecordWithVarargsComponent()
+  {
+    SeriesVarArgs test = new SeriesVarArgs("Fibonacci", 1,1,3,4);
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertArrayEquals(test.values(), new int[] { 1, 1, 3, 4 });
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithArrayComponent()}
+   */
+  @Test
+  public void testRecordWithArrayComponent() {
+    ArrayRecord test = new ArrayRecord(new String[] { "id" }, new int[][] { { 1, 2 } });
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertArrayEquals(test.names(), new String[] { "id" });
+    Assert.assertArrayEquals(test.matrix()[0], new int[] { 1, 2 });
+
   }
 
 }

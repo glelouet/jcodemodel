@@ -129,6 +129,27 @@ public class JRecordTestGen {
   }
 
   /**
+   * Test: Record with bounded generic type parameter Expected output:
+   *
+   * <pre>
+   * public record NumberPair&lt;T extends Number&gt;(T first, T second) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithBoundedTypeParameter() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("PairNumber");
+    final JTypeVar t = rec.generify("T", Number.class);
+    rec.recordComponent(t, "first");
+    rec.recordComponent(t, "second");
+    return cm;
+  }
+
+  /**
    * Test: Record with annotated component Expected output:
    *
    * <pre>
@@ -308,12 +329,81 @@ public class JRecordTestGen {
    * @throws JCodeModelException
    *                             In case of error
    */
-  public JCodeModel testNestedRecord() throws JCodeModelException 
+  public JCodeModel testNestedRecord() throws JCodeModelException
   {
     final JCodeModel cm = new JCodeModel();
     final JDefinedClass outer = cm._package(rootPackage)._class("Outer");
     final JDefinedClass inner = outer._record(JMod.PUBLIC, "Inner");
     inner.recordComponent(cm.ref(String.class), "value");
+    return cm;
+  }
+
+  /**
+   * Test: Record with javadoc Expected output:
+   *
+   * <pre>
+   * /**
+   *  * Represents a 2D point.
+   *  *
+   *  * @param x the x coordinate
+   *  * @param y the y coordinate
+   *  *\/
+   * public record Point(int x, int y) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithJavadoc() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("PointJavadoc");
+    final JRecordComponent rcX = rec.recordComponent(cm.INT, "x");
+    final JRecordComponent rcY = rec.recordComponent(cm.INT, "y");
+    rec.javadoc().add("Represents a 2D point.");
+    rec.javadoc().addParam(rcX).add("the x coordinate");
+    rec.javadoc().addParam(rcY).add("the y coordinate");
+    return cm;
+  }
+
+  /**
+   * Test: Record with varargs component (last component can be varargs) Expected
+   * output:
+   *
+   * <pre>
+   * public record VarArgsRecord(String name, int... values) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithVarargsComponent() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("SeriesVarArgs");
+    rec.recordComponent(cm.ref(String.class), "name");
+    rec.recordComponentVararg(cm.INT, "values");
+    return cm;
+  }
+
+  /**
+   * Test: Record with array component Expected output:
+   *
+   * <pre>
+   * public record ArrayRecord(String[] names, int[][] matrix) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithArrayComponent() throws JCodeModelException {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("ArrayRecord");
+    rec.recordComponent(cm.ref(String.class).array(), "names");
+    rec.recordComponent(cm.INT.array().array(), "matrix");
     return cm;
   }
 
