@@ -258,4 +258,63 @@ public class JRecordTestGen {
     return cm;
   }
 
+  /**
+   * Test: Record with static field and method Expected output:
+   *
+   * <pre>
+   * public record Point(int x, int y) {
+   * 	public static final Point ORIGIN = new Point(0, 0);
+   *
+   * 	public static Point of(int x, int y) {
+   * 		return new Point(x, y);
+   * 	}
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testRecordWithStaticMembers() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("PointStatic");
+    rec.recordComponent(cm.INT, "x");
+    rec.recordComponent(cm.INT, "y");
+
+    // Static field
+    rec.field(JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+        rec,
+        "ORIGIN",
+        JExpr._new(rec).arg(JExpr.lit(0)).arg(JExpr.lit(0)));
+
+    // Static factory method
+    final JMethod factory = rec.method(JMod.PUBLIC | JMod.STATIC, rec, "of");
+    final JVar xParam = factory.param(cm.INT, "x");
+    final JVar yParam = factory.param(cm.INT, "y");
+    factory.body()._return(JExpr._new(rec).arg(xParam).arg(yParam));
+    return cm;
+  }
+
+  /**
+   * Test: Nested record inside a class Expected output:
+   *
+   * <pre>
+   * public class Outer {
+   * 	public record Inner(String value) {
+   * 	}
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel testNestedRecord() throws JCodeModelException 
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass outer = cm._package(rootPackage)._class("Outer");
+    final JDefinedClass inner = outer._record(JMod.PUBLIC, "Inner");
+    inner.recordComponent(cm.ref(String.class), "value");
+    return cm;
+  }
+
 }

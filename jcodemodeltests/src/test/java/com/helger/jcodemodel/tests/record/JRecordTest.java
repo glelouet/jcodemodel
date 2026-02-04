@@ -49,6 +49,7 @@ import org.junit.Test;
 import com.helger.jcodemodel.exceptions.JCodeModelException;
 import com.helger.jcodemodel.tests.basic.record.*;
 import com.helger.jcodemodel.tests.basic.record.JRecordTestGen.RecordAnnotationExample;
+import com.helger.jcodemodel.tests.basic.record.Outer.Inner;
 
 /**
  * Test class for Java record support. Java records (JEP 395, Java 16+) are a special kind of class
@@ -168,6 +169,30 @@ public final class JRecordTest
     PointDistance test = new PointDistance(0, 0);
     Assert.assertTrue(test instanceof Record);
     Assert.assertEquals(0, test.distance(), 0.0);
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testRecordWithStaticMembers()}
+   */
+  @Test
+  public void testRecordWithStaticMembers() throws JCodeModelException
+  {
+    PointStatic test = PointStatic.ORIGIN;
+    Assert.assertTrue(test instanceof Record);
+    test = PointStatic.of(6, 78);
+    Assert.assertEquals(6, test.x());
+    Assert.assertEquals(78, test.y());
+  }
+
+  /**
+   * tests {@link JRecordTestGen#testNestedRecord()}
+   */
+  @Test
+  public void testNestedRecord() throws JCodeModelException
+  {
+    Inner test = new Inner("NaN");
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertEquals("NaN", test.value());
   }
 
 }
