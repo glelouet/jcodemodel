@@ -57,58 +57,9 @@ public final class JRecordTest
 {
 
 
-  /**
-   * Test: Record with object type components Expected output:
-   * 
-   * <pre>
-   * public record Person (String name, Integer age)
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testRecordWithObjectComponents () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("Person");
-    rec.recordComponent (cm.ref (String.class), "name");
-    rec.recordComponent (cm.ref (Integer.class), "age");
 
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output.contains ("record Person(java.lang.String name, java.lang.Integer age)"));
 
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
 
-  /**
-   * Test: Record implementing an interface Expected output:
-   * 
-   * <pre>
-   * public record NamedPoint (int x, int y, String name) implements Comparable &lt;NamedPoint&gt;
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testRecordImplementsInterface () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("NamedPoint");
-    rec.recordComponent (cm.INT, "x");
-    rec.recordComponent (cm.INT, "y");
-    rec.recordComponent (cm.ref (String.class), "name");
-    rec._implements (cm.ref (Comparable.class).narrow (rec));
-
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output, output.contains ("record NamedPoint(int x, int y, java.lang.String name)"));
-    assertTrue (output.contains ("implements java.lang.Comparable<org.example.NamedPoint>"));
-
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
 
   /**
    * Test: Generic record with type parameters Expected output:

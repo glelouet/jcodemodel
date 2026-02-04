@@ -47,6 +47,7 @@ import com.helger.jcodemodel.exceptions.JCodeModelException;
 import com.helger.jcodemodel.tests.basic.record.BasicPoint;
 import com.helger.jcodemodel.tests.basic.record.Empty;
 import com.helger.jcodemodel.tests.basic.record.JRecordTestGen;
+import com.helger.jcodemodel.tests.basic.record.NamedPoint;
 import com.helger.jcodemodel.tests.basic.record.Person;
 
 /**
@@ -86,5 +87,16 @@ public final class JRecordTest
   {
     Person test = new Person("John", 42);
     Assert.assertTrue(test instanceof Record);
+  }
+
+  /**
+   * tests {@link JRecordTestGen#genRecordImplementsInterface()}
+   */
+  @Test
+  public void testRecordImplementsInterface() throws JCodeModelException
+  {
+    NamedPoint test = new NamedPoint(5, 10, "15");
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertTrue(test instanceof Comparable<NamedPoint>);
   }
 }
