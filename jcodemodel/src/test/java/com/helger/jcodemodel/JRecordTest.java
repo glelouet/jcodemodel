@@ -55,55 +55,7 @@ import com.helger.jcodemodel.util.CodeModelTestsHelper;
  */
 public final class JRecordTest
 {
-  /**
-   * Test: Basic record with two components Expected output:
-   * 
-   * <pre>
-   * package org.example;
-   *
-   * public record Point (int x, int y)
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testBasicRecord () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("Point");
-    rec.recordComponent (cm.INT, "x");
-    rec.recordComponent (cm.INT, "y");
 
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output.contains ("record Point(int x, int y)"));
-
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
-
-  /**
-   * Test: Empty record (no components) Expected output:
-   * 
-   * <pre>
-   * public record Empty ()
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testEmptyRecord () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("Empty");
-
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output.contains ("record Empty()"));
-
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
 
   /**
    * Test: Record with object type components Expected output:

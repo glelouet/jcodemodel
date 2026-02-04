@@ -25,7 +25,6 @@ public class GenerateTestFiles {
 
   public static void main(String[] args) {
     String rootPath = args == null || args.length == 0 ? "." : args[0];
-    System.out.println("root is " + rootPath);
     File outputFile = new File(rootPath, OUTPUT_DIR);
     File classScanDir = new File(rootPath, CLASS_SCAN_DIR);
     new GenerateTestFiles(outputFile, classScanDir)
