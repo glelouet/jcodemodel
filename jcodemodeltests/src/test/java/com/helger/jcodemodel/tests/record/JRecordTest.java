@@ -40,14 +40,20 @@
  */
 package com.helger.jcodemodel.tests.record;
 
+import java.lang.reflect.RecordComponent;
+import java.util.stream.Stream;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.helger.jcodemodel.exceptions.JCodeModelException;
+import com.helger.jcodemodel.tests.basic.record.AnnotatedPerson;
 import com.helger.jcodemodel.tests.basic.record.BasicPoint;
 import com.helger.jcodemodel.tests.basic.record.Empty;
 import com.helger.jcodemodel.tests.basic.record.JRecordTestGen;
+import com.helger.jcodemodel.tests.basic.record.JRecordTestGen.RecordAnnotationExample;
 import com.helger.jcodemodel.tests.basic.record.NamedPoint;
+import com.helger.jcodemodel.tests.basic.record.Pair;
 import com.helger.jcodemodel.tests.basic.record.Person;
 
 /**
@@ -67,6 +73,8 @@ public final class JRecordTest
   {
     BasicPoint test = new BasicPoint(2, 3);
     Assert.assertTrue(test instanceof Record);
+    Assert.assertEquals(2, test.x());
+    Assert.assertEquals(3, test.y());
   }
 
   /**
@@ -87,6 +95,8 @@ public final class JRecordTest
   {
     Person test = new Person("John", 42);
     Assert.assertTrue(test instanceof Record);
+    Assert.assertEquals((Integer) 42, test.age());
+    Assert.assertEquals("John", test.name());
   }
 
   /**
@@ -98,5 +108,38 @@ public final class JRecordTest
     NamedPoint test = new NamedPoint(5, 10, "15");
     Assert.assertTrue(test instanceof Record);
     Assert.assertTrue(test instanceof Comparable<NamedPoint>);
+    Assert.assertEquals("15", test.name());
+    Assert.assertEquals(5, test.x());
+    Assert.assertEquals(10, test.y());
+  }
+
+  /**
+   * tests {@link JRecordTestGen#genGenericRecord()}
+   */
+  @Test
+  public void testGenericRecord() throws JCodeModelException
+  {
+    Pair<Integer, String> test = new Pair<>(666, "BE NOT AFRAID");
+    Assert.assertTrue(test instanceof Record);
+    Assert.assertEquals((Integer) 666, test.first());
+    Assert.assertEquals("BE NOT AFRAID", test.second());
+  }
+
+  /**
+   * tests {@link JRecordTestGen#genRecordWithAnnotatedComponent()}
+   *
+   * @throws SecurityException
+   * @throws NoSuchFieldException
+   */
+  @Test
+  public void genRecordWithAnnotatedComponent() throws JCodeModelException, NoSuchFieldException, SecurityException
+  {
+    AnnotatedPerson test = new AnnotatedPerson("Salomon", 2000);
+    Assert.assertTrue(test instanceof Record);
+
+    RecordComponent fieldComponent = Stream.of(test.getClass().getRecordComponents())
+        .filter(rc -> rc.getName().equals("name"))
+        .findFirst().get();
+    Assert.assertTrue(fieldComponent.isAnnotationPresent(RecordAnnotationExample.class));
   }
 }

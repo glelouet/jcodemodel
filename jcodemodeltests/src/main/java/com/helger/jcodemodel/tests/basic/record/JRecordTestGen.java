@@ -1,10 +1,17 @@
 package com.helger.jcodemodel.tests.basic.record;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.JDefinedClass;
 import com.helger.jcodemodel.JExpr;
 import com.helger.jcodemodel.JMethod;
 import com.helger.jcodemodel.JMod;
+import com.helger.jcodemodel.JRecordComponent;
+import com.helger.jcodemodel.JTypeVar;
 import com.helger.jcodemodel.compile.annotation.TestJCM;
 import com.helger.jcodemodel.exceptions.JCodeModelException;
 
@@ -96,6 +103,58 @@ public class JRecordTestGen {
     cmp.param(rec, "other");
     cmp.body()._return(JExpr.lit(0));
     return cm;
+  }
+
+  /**
+   * Test: Generic record with type parameters Expected output:
+   *
+   * <pre>
+   * public record Pair&lt;T, U&gt;(T first, U second) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel genGenericRecord() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("Pair");
+    final JTypeVar t = rec.generify("T");
+    final JTypeVar u = rec.generify("U");
+    rec.recordComponent(t, "first");
+    rec.recordComponent(u, "second");
+    return cm;
+  }
+
+  /**
+   * Test: Record with annotated component Expected output:
+   *
+   * <pre>
+   * public record Person(@NonNull String name, int age) {
+   * }
+   * </pre>
+   *
+   * @throws JCodeModelException
+   *                             In case of error
+   */
+  public JCodeModel genRecordWithAnnotatedComponent() throws JCodeModelException
+  {
+    final JCodeModel cm = new JCodeModel();
+    final JDefinedClass rec = cm._package(rootPackage)._record("AnnotatedPerson");
+    final JRecordComponent nameComponent = rec.recordComponent(cm.ref(String.class), "name");
+    nameComponent.annotate(RecordAnnotationExample.class);
+    rec.recordComponent(cm.INT, "age");
+    return cm;
+  }
+
+  /**
+   * we need a specific record annotation to be kept
+   */
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.RECORD_COMPONENT)
+  public @interface RecordAnnotationExample
+  {
   }
 
 }

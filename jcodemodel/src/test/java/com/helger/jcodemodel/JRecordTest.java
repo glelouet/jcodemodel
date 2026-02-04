@@ -61,60 +61,9 @@ public final class JRecordTest
 
 
 
-  /**
-   * Test: Generic record with type parameters Expected output:
-   * 
-   * <pre>
-   * public record Pair &lt;T, U&gt; (T first, U second)
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testGenericRecord () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("Pair");
-    final JTypeVar t = rec.generify ("T");
-    final JTypeVar u = rec.generify ("U");
-    rec.recordComponent (t, "first");
-    rec.recordComponent (u, "second");
 
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output.contains ("record Pair<T, U>(T first, U second)"));
 
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
 
-  /**
-   * Test: Record with annotated component Expected output:
-   * 
-   * <pre>
-   * public record Person (@NonNull String name, int age)
-   * {}
-   * </pre>
-   * 
-   * @throws JCodeModelException
-   *         In case of error
-   */
-  @Test
-  public void testRecordWithAnnotatedComponent () throws JCodeModelException
-  {
-    final JCodeModel cm = new JCodeModel ();
-    final JDefinedClass rec = cm._package ("org.example")._record ("Person");
-
-    final JRecordComponent nameComponent = rec.recordComponent (cm.ref (String.class), "name");
-    nameComponent.annotate (org.jspecify.annotations.NonNull.class);
-
-    rec.recordComponent (cm.INT, "age");
-
-    final String output = CodeModelTestsHelper.declare (rec);
-    assertTrue (output.contains ("@org.jspecify.annotations.NonNull java.lang.String name"));
-
-    CodeModelTestsHelper.parseCodeModel (cm);
-  }
 
   /**
    * Test: Record with compact constructor (validation) Expected output:
