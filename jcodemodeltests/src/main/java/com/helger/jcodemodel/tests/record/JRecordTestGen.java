@@ -1,4 +1,4 @@
-package com.helger.jcodemodel.tests.basic.record;
+package com.helger.jcodemodel.tests.record;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

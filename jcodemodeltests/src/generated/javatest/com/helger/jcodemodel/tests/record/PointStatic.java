@@ -1,4 +1,4 @@
-package com.helger.jcodemodel.tests.basic.record;
+package com.helger.jcodemodel.tests.record;
 
 public record PointStatic(int x, int y) {
     public static final PointStatic ORIGIN = new PointStatic(0, 0);

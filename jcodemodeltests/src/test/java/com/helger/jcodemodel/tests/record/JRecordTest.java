@@ -47,9 +47,9 @@ import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.helger.jcodemodel.tests.basic.record.*;
-import com.helger.jcodemodel.tests.basic.record.JRecordTestGen.RecordAnnotationExample;
-import com.helger.jcodemodel.tests.basic.record.Outer.Inner;
+import com.helger.jcodemodel.tests.record.*;
+import com.helger.jcodemodel.tests.record.JRecordTestGen.RecordAnnotationExample;
+import com.helger.jcodemodel.tests.record.Outer.Inner;
 
 /**
  * Test class for Java record support. Java records (JEP 395, Java 16+) are a special kind of class
