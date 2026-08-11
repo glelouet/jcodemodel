@@ -3,60 +3,81 @@ package com.helger.jcodemodel.tests.format.parentheses;
 import org.junit.Assert;
 import org.junit.Test;
 
+/// results should be the same for each implementation
 public class OperatorTest {
 
-  /// same test, for the 3 classes
-  @Test
-  public void testMethods() {
-    {
-      Assert.assertEquals(1, OperatorParenthesesAlways.multIfSameOddityElseAdd(1, 1));
-      Assert.assertEquals(4, OperatorParenthesesAlways.multIfSameOddityElseAdd(2, 2));
-      Assert.assertEquals(5, OperatorParenthesesAlways.multIfSameOddityElseAdd(2, 3));
-      Assert.assertEquals(8, OperatorParenthesesAlways.multIfSameOddityElseAdd(2, 4));
-      Assert.assertEquals(7, OperatorParenthesesAlways.multIfSameOddityElseAdd(2, 5));
-      Assert.assertEquals('0', OperatorParenthesesAlways.representBools(false, false));
-      Assert.assertEquals('1', OperatorParenthesesAlways.representBools(false, true));
-      Assert.assertEquals('2', OperatorParenthesesAlways.representBools(true, false));
-      Assert.assertEquals('3', OperatorParenthesesAlways.representBools(true, true));
-      Assert.assertEquals(null, OperatorParenthesesAlways.concat(null, null));
-      Assert.assertEquals("a", OperatorParenthesesAlways.concat("a", null));
-      Assert.assertEquals("b", OperatorParenthesesAlways.concat(null, "b"));
-      Assert.assertEquals("ab", OperatorParenthesesAlways.concat("a", "b"));
-      Assert.assertEquals(0xffffffff, OperatorParenthesesAlways.bitwiseImply(0, 1));
-    }
-    {
-      Assert.assertEquals(1, OperatorParenthesesNoToken.multIfSameOddityElseAdd(1, 1));
-      Assert.assertEquals(4, OperatorParenthesesNoToken.multIfSameOddityElseAdd(2, 2));
-      Assert.assertEquals(5, OperatorParenthesesNoToken.multIfSameOddityElseAdd(2, 3));
-      Assert.assertEquals(8, OperatorParenthesesNoToken.multIfSameOddityElseAdd(2, 4));
-      Assert.assertEquals(7, OperatorParenthesesNoToken.multIfSameOddityElseAdd(2, 5));
-      Assert.assertEquals('0', OperatorParenthesesNoToken.representBools(false, false));
-      Assert.assertEquals('1', OperatorParenthesesNoToken.representBools(false, true));
-      Assert.assertEquals('2', OperatorParenthesesNoToken.representBools(true, false));
-      Assert.assertEquals('3', OperatorParenthesesNoToken.representBools(true, true));
-      Assert.assertEquals(null, OperatorParenthesesNoToken.concat(null, null));
-      Assert.assertEquals("a", OperatorParenthesesNoToken.concat("a", null));
-      Assert.assertEquals("b", OperatorParenthesesNoToken.concat(null, "b"));
-      Assert.assertEquals("ab", OperatorParenthesesNoToken.concat("a", "b"));
-      Assert.assertEquals(0xffffffff, OperatorParenthesesNoToken.bitwiseImply(0, 1));
-    }
-    {
-      Assert.assertEquals(1, OperatorParenthesesRequired.multIfSameOddityElseAdd(1, 1));
-      Assert.assertEquals(4, OperatorParenthesesRequired.multIfSameOddityElseAdd(2, 2));
-      Assert.assertEquals(5, OperatorParenthesesRequired.multIfSameOddityElseAdd(2, 3));
-      Assert.assertEquals(8, OperatorParenthesesRequired.multIfSameOddityElseAdd(2, 4));
-      Assert.assertEquals(7, OperatorParenthesesRequired.multIfSameOddityElseAdd(2, 5));
-      Assert.assertEquals('0', OperatorParenthesesRequired.representBools(false, false));
-      Assert.assertEquals('1', OperatorParenthesesRequired.representBools(false, true));
-      Assert.assertEquals('2', OperatorParenthesesRequired.representBools(true, false));
-      Assert.assertEquals('3', OperatorParenthesesRequired.representBools(true, true));
-      Assert.assertEquals(null, OperatorParenthesesRequired.concat(null, null));
-      Assert.assertEquals("a", OperatorParenthesesRequired.concat("a", null));
-      Assert.assertEquals("b", OperatorParenthesesRequired.concat(null, "b"));
-      Assert.assertEquals("ab", OperatorParenthesesRequired.concat("a", "b"));
-      Assert.assertEquals(0xffffffff, OperatorParenthesesRequired.bitwiseImply(0, 1));
-    }
+  @FunctionalInterface
+  interface IF1 {
+    int multIfSameOddityElseAdd(int a, int b);
+  }
 
+  @Test
+  public void testMultIfSameOddityElseAdd() {
+    for (IF1 f : new IF1[] {
+        OperatorParenthesesAlways::multIfSameOddityElseAdd,
+        OperatorParenthesesNoToken::multIfSameOddityElseAdd,
+        OperatorParenthesesRequired::multIfSameOddityElseAdd
+    }) {
+      Assert.assertEquals(1, f.multIfSameOddityElseAdd(1, 1));
+      Assert.assertEquals(4, f.multIfSameOddityElseAdd(2, 2));
+      Assert.assertEquals(5, f.multIfSameOddityElseAdd(2, 3));
+      Assert.assertEquals(8, f.multIfSameOddityElseAdd(2, 4));
+      Assert.assertEquals(7, f.multIfSameOddityElseAdd(2, 5));
+    }
+  }
+
+  @FunctionalInterface
+  interface IF2 {
+    char representBools(boolean a, boolean b);
+  }
+
+  @Test
+  public void testRepresentBools() {
+    for (IF2 f : new IF2[] {
+        OperatorParenthesesAlways::representBools,
+        OperatorParenthesesNoToken::representBools,
+        OperatorParenthesesRequired::representBools
+    }) {
+      Assert.assertEquals('0', f.representBools(false, false));
+      Assert.assertEquals('1', f.representBools(false, true));
+      Assert.assertEquals('2', f.representBools(true, false));
+      Assert.assertEquals('3', f.representBools(true, true));
+    }
+  }
+
+  @FunctionalInterface
+  interface IF3 {
+    String concat(String a, String b);
+  }
+
+  @Test
+  public void testConcat() {
+    for (IF3 f : new IF3[] {
+        OperatorParenthesesAlways::concat,
+        OperatorParenthesesNoToken::concat,
+        OperatorParenthesesRequired::concat
+    }) {
+      Assert.assertEquals(null, f.concat(null, null));
+      Assert.assertEquals("a", f.concat("a", null));
+      Assert.assertEquals("b", f.concat(null, "b"));
+      Assert.assertEquals("ab", f.concat("a", "b"));
+    }
+  }
+
+  @FunctionalInterface
+  interface IF4 {
+    int bitwiseImply(int a, int b);
+  }
+
+  @Test
+  public void testBitwiseImply() {
+    for (IF4 f : new IF4[] {
+        OperatorParenthesesAlways::bitwiseImply,
+        OperatorParenthesesNoToken::bitwiseImply,
+        OperatorParenthesesRequired::bitwiseImply
+    }) {
+      Assert.assertEquals(0xffffffff, f.bitwiseImply(0, 1));
+    }
   }
 
 }
