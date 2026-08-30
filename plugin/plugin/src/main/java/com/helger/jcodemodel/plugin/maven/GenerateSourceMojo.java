@@ -156,9 +156,10 @@ public class GenerateSourceMojo extends AbstractMojo
                                                                               : List.of (new DirectSourced (m_sData));
     for (ISourcedInputStream sourced : sourcesList)
     {
+      // specification accepts null closable, in that case it's not closed.
       try (InputStream is = sourced.inputStream ())
       {
-        cmb.build (cm, is);
+        cmb.build (cm, sourced);
       }
       catch (JCodeModelException | IOException e)
       {
