@@ -44,15 +44,14 @@ public class CSVGenerator extends AbstractFlatStructureGenerator
     fldSep = params.getOrDefault ("field_sep", fldSep);
   }
 
-  @SuppressWarnings("resource")
+  @SuppressWarnings ("resource")
   @Override
-  protected Stream<IFlatStructRecord> loadSource(final ISourcedInputStream source)
+  protected Stream <IFlatStructRecord> loadSource (final ISourcedInputStream source)
   {
     // What charset to use?
-    return new BufferedReader(new InputStreamReader(source.inputStream()))
-        .lines()
-        .map(this::convertLine)
-        .filter(r -> r != null);
+    return new BufferedReader (new InputStreamReader (source.inputStream ())).lines ()
+                                                                             .map (this::convertLine)
+                                                                             .filter (r -> r != null);
   }
 
   @Nullable
@@ -64,7 +63,8 @@ public class CSVGenerator extends AbstractFlatStructureGenerator
     }
     final String [] spl = line.trim ().split (fldSep);
     final String className = spl[0].trim ();
-    if (StringHelper.isEmpty (className)) {
+    if (StringHelper.isEmpty (className))
+    {
       return null;
     }
 
@@ -96,7 +96,8 @@ public class CSVGenerator extends AbstractFlatStructureGenerator
     // no field name specified : class or package definition
     if (StringHelper.isEmpty (fieldName))
     {
-      if (className.contains (" ")) {
+      if (className.contains (" "))
+      {
         return new PackageCreation (className.replaceAll (".* ", ""), options);
       }
 

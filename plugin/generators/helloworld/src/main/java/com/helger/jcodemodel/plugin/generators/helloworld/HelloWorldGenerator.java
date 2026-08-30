@@ -46,7 +46,7 @@ public class HelloWorldGenerator implements ICodeModelBuilder
   }
 
   @Override
-  public void build(final JCodeModel model, final ISourcedInputStream source) throws JCodeModelException
+  public void build (final JCodeModel model, final ISourcedInputStream source) throws JCodeModelException
   {
     final JDefinedClass cl = model._class (expandClassName (className));
     if (m_sClassHeader != null && !m_sClassHeader.isBlank ())

@@ -36,7 +36,7 @@ public class JsonGenerator extends AbstractFlatStructureGenerator
 {
 
   @Override
-  protected Stream<IFlatStructRecord> loadSource(ISourcedInputStream source)
+  protected Stream <IFlatStructRecord> loadSource (ISourcedInputStream source)
   {
     try
     {
@@ -48,10 +48,10 @@ public class JsonGenerator extends AbstractFlatStructureGenerator
     }
   }
 
-  protected JsonPackage load(ISourcedInputStream source) throws IOException
+  protected JsonPackage load (ISourcedInputStream source) throws IOException
   {
     ObjectMapper mapper = new ObjectMapper ();
-    return mapper.readerFor(JsonPackage.class).readValue(source.inputStream());
+    return mapper.readerFor (JsonPackage.class).readValue (source.inputStream ());
   }
 
   protected Stream <IFlatStructRecord> visitPackage (JsonPackage pck, String path)
