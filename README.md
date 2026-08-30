@@ -230,5 +230,5 @@ v2.6.4 - 2014-04-10
 
 ---
 
-On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a> |
-Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
+My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
+It is appreciated if you star the GitHub project if you like it.

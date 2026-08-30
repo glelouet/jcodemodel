@@ -16,11 +16,15 @@ package com.helger.jcodemodel.plugin.maven;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -66,6 +70,11 @@ public class GenerateSourceMojo extends AbstractMojo
    */
   @Parameter (name = "source", property = "jcodemodel.source")
   private String m_sSource;
+
+  /// if the source is a directory, and this param is not null/empty, then only files with a last
+  /// name containing this (ignoring case) will be selected as generator sources
+  @Parameter (name = "sourcesFilter", property = "jcodemodel.sourcesFilter", required = false)
+  private String sourcesFilter;
 
   /**
    * Java feature (major release version) the generated class files are targeted at. When unset the
@@ -141,13 +150,24 @@ public class GenerateSourceMojo extends AbstractMojo
     {
       getLog ().warn ("discarding source param " + m_sSource + " as data is already set");
     }
-    try (final InputStream aIS = StringHelper.isEmpty (m_sData) ? findSource ()
-                                                                : new NonBlockingByteArrayInputStream (m_sData.getBytes (StandardCharsets.UTF_8)))
+    Stream <? extends InputStream> sis = (StringHelper.isEmpty (m_sData)) ? findSources ()
+                                                                          : Stream.of (new NonBlockingByteArrayInputStream (m_sData.getBytes (StandardCharsets.UTF_8)));
+    for (InputStream is : sis.toList ())
     {
-      cmb.build (cm, aIS);
+      try (is)
+      {
+        cmb.build (cm, is);
+      }
+      catch (JCodeModelException | IOException e)
+      {
+        throw new MojoFailureException (e);
+      }
+    }
+    try
+    {
       new JCMWriter (cm).setJavaFeature (findJavaFeature ()).build (dir, (IProgressTracker) null);
     }
-    catch (JCodeModelException | IOException e)
+    catch (IOException e)
     {
       throw new MojoFailureException (e);
     }
@@ -177,9 +197,10 @@ public class GenerateSourceMojo extends AbstractMojo
     if (sGeneratorClass == null)
       sGeneratorClass = findGeneratorClass ();
 
-    return StringHelper.isEmpty (sGeneratorClass) ? null : (ICodeModelBuilder) Class.forName (sGeneratorClass)
-                                                                                    .getDeclaredConstructor ()
-                                                                                    .newInstance ();
+    return StringHelper.isEmpty (sGeneratorClass) ? null
+                                                  : (ICodeModelBuilder) Class.forName (sGeneratorClass)
+                                                                             .getDeclaredConstructor ()
+                                                                             .newInstance ();
   }
 
   @Nullable
@@ -198,35 +219,87 @@ public class GenerateSourceMojo extends AbstractMojo
     }
   }
 
-  @Nullable
-  protected InputStream findSource () throws MojoExecutionException
+  /// Extract the inputstreams from the specified source.
+  ///
+  /// - null is returned as a stream containing null
+  /// - A directory string is recursively streamed over its files
+  /// - A single file String is opened as a single-element stream
+  /// - A url string is opened it as a stream
+  /// - otherwise, as for example file not found, exception is thrown
+  ///
+  /// @return extracted input streams if success, Stream of null if no source.
+  /// @throws MojoExecutionException if can't open the source as a file nor an url.
+  @NonNull
+  protected Stream <InputStream> findSources () throws MojoExecutionException
   {
     if (m_sSource == null || m_sSource.isBlank ())
-      return null;
-
+      return Stream.of ((InputStream) null);
     // dumb checking : is it a file ? a URL ?
+
+    // store the file exception, only show it if url also fails
+    Exception fileException = null;
     try
     {
       final File aTargetFile = m_sSource.startsWith ("/") ? new File (m_sSource)
                                                           : new File (m_aProject.getBasedir (), m_sSource);
-      return new FileInputStream (aTargetFile);
+      return streamFiles (aTargetFile);
     }
     catch (final Exception e)
     {
-      getLog ().info ("while trying to open " + m_sSource + " as a file", e);
+      fileException = e;
     }
 
     try
     {
       final URL aURL = new URL (m_sSource);
-      return aURL.openStream ();
+      return Stream.of (aURL.openStream ());
     }
     catch (final IOException e)
     {
-      getLog ().info ("while trying to open " + m_sSource + " as a url", e);
+      getLog ().error ("while trying to open " + m_sSource + " as a file", fileException);
+      getLog ().error ("while trying to open " + m_sSource + " as a url", e);
     }
 
     throw new MojoExecutionException ("could not open provided source " + m_sSource + " as a file or url");
+  }
+
+  /**
+   * recursively stream the files inside the file.
+   * 
+   * @param rootFile
+   *        file to browse
+   * @return a single inputstream of the file if it is a normal file. inputstreams of its children
+   *         if it is a dir. Otherwise, return empty stream.
+   */
+  @NonNull
+  protected Stream <InputStream> streamFiles (File rootFile)
+  {
+    if (rootFile.isFile ())
+    {
+      try
+      {
+        return Stream.of (new FileInputStream (rootFile));
+      }
+      catch (FileNotFoundException e)
+      {
+        // should never happens since isFile checks for existence
+        throw new IllegalStateException (e);
+      }
+    }
+    else
+      if (!rootFile.isDirectory ())
+      {
+        return Stream.of ();
+      }
+      else // file is directory
+        return Stream.of (rootFile.listFiles ())
+                     .filter (f -> sourcesFilter == null ||
+                       sourcesFilter.isBlank () ||
+                       f.getName ()
+                        .toLowerCase (Locale.ROOT)
+                        .contains (sourcesFilter.toLowerCase (Locale.ROOT)))
+                     .sorted (Comparator.comparing (File::getPath))
+                     .flatMap (this::streamFiles);
   }
 
   /**
